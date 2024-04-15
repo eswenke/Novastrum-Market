@@ -1,12 +1,12 @@
 ## Novastrum-Market
 ## Sri Bala (srbala@calpoly.edu), Bryce Kennedy(bkenne06@calpoly.edu), Ethan Swenke(eswenke@calpoly.edu), and Sofia Bryukhova (sbryukho@calpoly.edu)
-Our API idea is about an intergalactic black market. It will include bidding wars, gambling, space drugs, and space crime. There are extraterrestrial lifeforms scowering the black market in search of their next illegal space endeavor. There is an established universe with several moons and planets that each contain mineable 'substances' and life forms. The beings have agreed to incorperate the currency of Voidex
+Our API idea is about an intergalactic black market. It will include bidding wars, gambling, space drugs, and space crime. There are extraterrestrial lifeforms scowering the black market in search of their next illegal space endeavor. There is an established universe with several planets that each contain mineable 'substances' and life forms. The beings have agreed to incorperate the currency of Voidex
 
 ## Planets
 Ecliptix, Lyxion IV, Pyre, Sylvaria, Zentharis, with a sun named Celestigon
 
 ## Lore
-Ecliptix is the main planet in the Novastrum Belt. The Government operates from this planet, and because of this, activity in the Nova Market is held mainly on the other 4 planets. These planets are rich in different minable substances, and their economies are centered around trading and bidding in the Nova Market. 
+Ecliptix is the main planet in the Novastrum Belt. The government operates from this planet, and because of this, activity in the Nova Market (this solar system's black market) is held mainly on the other 4 planets. These planets are rich in different mineable substances, and their economies are centered around mining and trading these substances. Behind the scenes, the Nova Market also operates as a way to stimulate their economies via illicit trading and bidding. 
 
 Ecliptix holds a centralized prison complex known as " ", and criminals from other planets are extradited here upon detainment, reducing activity on the planet from which they leave.
 
