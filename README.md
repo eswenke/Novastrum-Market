@@ -5,6 +5,7 @@ Our API idea is about an intergalactic black market. It will include bidding war
 ## Planets
 Ecliptix, Lyxion IV, Pyre, Sylvaria, Zentharis, with a sun named Celestigon
 
+## Concepts
 Example Lifeforms:
 ![image](https://github.com/eswenke/csc-365-API/assets/97144495/c811b59d-75c0-4707-96d0-e8d9dfce2cbe)
 
