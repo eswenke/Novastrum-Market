@@ -8,7 +8,7 @@ Ecliptix, Lyxion IV, Pyre, Sylvaria, Zentharis, with a sun named Celestigon
 ## Lore
 Ecliptix is the main planet in the Novastrum Belt. The government operates from this planet, and because of this, activity in the Nova Market (this solar system's black market) is held mainly on the other 4 planets. These planets are rich in different mineable substances, and their economies are centered around mining and trading these substances. Behind the scenes, the Nova Market also operates as a way to stimulate their economies via illicit trading and bidding. 
 
-Ecliptix holds a centralized prison complex known as " ", and criminals from other planets are extradited here upon detainment, reducing activity on the planet from which they leave.
+Ecliptix holds a centralized prison complex known as Edgevoid, and criminals from other planets are extradited here upon detainment, reducing activity on the planet from which they leave.
 
 Lyxion IV is a planet that has been war-torn throughout the ages. The government designated this planet as the centralized war hub in order to minimize destruction of the solar system, and all warring groups agreed upon this in a treaty call the Nova War Pact. Over the years, the planet has had to be restructured and rebuilt due to the unihabitable nature of the aftermath following each war. Due to living costs being a fraction of the cost of other planets, Lyxion IV remains populated by residents of the Novastrum Belt.
 
