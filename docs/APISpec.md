@@ -21,7 +21,8 @@ set winners of space wars
 modify narcotics supply … etc
 NOT ALLOWED: can’t be miner, can’t be chemist …  
 
-endpoints: 
+## endpoints: 
+
 /status : {role, voidex, narcos_owned: {narco, quant}} …
 
 /market_listings: {narcos{name, proportions of ms}, mineable substances:{name, planet-origin}}
