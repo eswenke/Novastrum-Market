@@ -23,11 +23,18 @@ NOT ALLOWED: can’t be miner, can’t be chemist …
 
 endpoints: 
 /status : {role, voidex, narcos_owned: {narco, quant}} …
+
 /market_listings: {narcos{name, proportions of ms}, mineable substances:{name, planet-origin}}
+
 /carts
+
 /chemist/plan
+
 /chemist/deliver
+
 /miner/plan
+
 /miner/deliver
+
 /govt/plan
 
