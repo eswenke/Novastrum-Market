@@ -23,9 +23,54 @@ NOT ALLOWED: can’t be miner, can’t be chemist …
 
 ## endpoints: 
 
-/status : {role, voidex, narcos_owned: {narco, quant}} …
+/status/civilian_id
+
+Request: (GET)
+[
+  {
+  }
+]
+
+Response:
+{
+  role: "String"
+}
+
+/inventory/civilian_id
+
+Request: (GET)
+[
+  {
+  }
+]
+
+Response:
+{
+  inventory: [
+    num_voidex: int
+    num_drugs: int
+    num_substances: null or int
+  ]
+}
+
 
 /market_listings: {narcos{name, proportions of ms}, mineable substances:{name, planet-origin}}
+
+Request: (GET)
+[
+  {
+  }
+]
+
+Response:
+{
+  inventory: [
+    num_voidex: int
+    num_drugs: int
+    num_substances: null or int
+  ]
+}
+
 
 /carts
 
