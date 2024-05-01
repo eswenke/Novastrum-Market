@@ -23,44 +23,32 @@ NOT ALLOWED: can’t be miner, can’t be chemist …
 
 ## endpoints: 
 
-/civilian_id/status
+### Get Promotion Plan - `/inventory/plan` (POST)
 
-**Request:** (GET)
-
-```json
-[
-    {
-        "role": "string", 
-    }
-]
-```
-
-**Response:**
+**Response**:
 
 ```json
 [
     {
-        "role": "string", 
+        "promoted": "integer"
     }
 ]
 ```
 
-civilian_id/inventory
 
-**Request:** (GET)
-[
-  {
-  }
-]
+### Get inventory Plan - `/inventory/audit` (GET)
 
-**Response:**
+**Response**:
+
+```json
 [
     {
-        "num_voidex": int,
-        "num_drugs": int,
-        "num_substances": null or int
+        "num_narcotics": "integer",
+        "num_substances": "integer",
+        "num_voidex": "integer"
     }
 ]
+```
 
 
 ### Get Market Listing - `/market_listing/` (GET)
@@ -131,7 +119,7 @@ Create a transaction.
 ```
 
 
-### Get Chemist Plan - `/civilian/chemist/plan` (GET)
+### Get Chemist Plan - `/civilian/chemist/plan` (POST)
 
 **Response**:
 
@@ -147,7 +135,7 @@ Create a transaction.
 ```
 
 
-### Get Miner Plan `/civilian/miner/plan` (GET)
+### Get Miner Plan `/civilian/miner/plan` (POST)
 
 **Response**:
 
@@ -162,7 +150,7 @@ Create a transaction.
 ```
 
 
-### Get Government Official Plan - `/civilian/govt/plan` (GET)
+### Get Government Official Plan - `/civilian/govt/plan` (POST)
 
 **Response**:
 
