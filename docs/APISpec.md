@@ -62,6 +62,7 @@ civilian_id/inventory
     }
 ]
 
+
 ### Get Market Listing - `/market_listing/` (GET)
 
 Retrieves the a market list of items. Each unique item combination should have only a single price.
@@ -80,7 +81,8 @@ Retrieves the a market list of items. Each unique item combination should have o
 ]
 ```
 
-### Post Market Listing - `/transactions/` (POST)
+
+### Create Transaction - `/transactions/` (POST)
 
 Create a transaction.
 
@@ -105,6 +107,7 @@ Create a transaction.
 ]
 ```
 
+
 ### Adding Item to Transaction - `/transactions/{transaction_id}/items/{items_name}` (PUT)
 
 **Request**:
@@ -117,7 +120,7 @@ Create a transaction.
 ]
 ```
 
-**Respons**:
+**Response**:
 
 ```json
 [
@@ -127,13 +130,50 @@ Create a transaction.
 ]
 ```
 
-/chemist/plan
 
-/chemist/deliver
+### Get Chemist Plan - `/civilian/chemist/plan` (GET)
 
-/miner/plan
+**Response**:
 
-/miner/deliver
+```json
+[
+    {
+        "narco_type" : "integer arr",
+        "name" : "string",
+        "quantity", "integer",
+        "price", "integer"
+    }
+]
+```
 
-/govt/plan
 
+### Get Miner Plan `/civilian/miner/plan` (GET)
+
+**Response**:
+
+```json
+[
+    {
+        "name" : "string",
+        "quantity", "integer",
+        "price", "integer"
+    }
+]
+```
+
+
+### Get Government Official Plan - `/civilian/govt/plan` (GET)
+
+**Response**:
+
+```json
+[
+    {
+        "war_id" : "integer",
+        "planet_1" : "string",
+        "planet_2" : "string",
+        "initial_bid" : "integer",
+        "length_bid" : "integer",
+    }
+]
+```
