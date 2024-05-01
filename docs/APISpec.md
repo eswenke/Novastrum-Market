@@ -26,12 +26,17 @@ NOT ALLOWED: can’t be miner, can’t be chemist …
 /civilian_id/status
 
 **Request:** (GET)
+
+```json
 [
-  {
-  }
+    {
+        "role": "string", 
+    }
 ]
+```
 
 **Response:**
+
 ```json
 [
     {
@@ -57,43 +62,71 @@ civilian_id/inventory
     }
 ]
 
-/market_listings: {narcos{name, proportions of ms}, mineable substances:{name, planet-origin}}
+### Get Market Listing - `/market_listing/` (GET)
 
-Request: (GET)
+Retrieves the a market list of items. Each unique item combination should have only a single price.
+
+**Returns**:
+
+```json
 [
-  {
-  }
+    {
+        "seller_id" : "string",
+        "item_type" : "string",
+        "name": "string",
+        "quantity": "integer", /* Between 1 and 10000 */
+        "price": "integer", /* Between 1 and 500 */
+    }
 ]
+```
 
-Response:
-``` json
+### Post Market Listing - `/transactions/` (POST)
+
+Create a transaction.
+
+**Request**:
+
+```json
 [
     {
-        "item": Narco, Bid, Substance,
-        "item_id": int,
-        "name": "String",
-        "seller_id": "String",
-        "price": int,
-        "quantity": int
+        "civilian_id" : "integer",
+        "transaction_id" : "integer"
     }
-]```
+]
+```
 
-/carts
+**Return**:
 
-Request: (GET)
-``` json
-{
-  "civilian_id": int,
-  "transaction_id": int
-} ```
-
-Response:
-``` json
+```json
 [
     {
-        "transaction_id": int
+        "transaction_id" : "integer"
     }
-]```
+]
+```
+
+### Adding Item to Transaction - `/transactions/{transaction_id}/items/{items_name}` (PUT)
+
+**Request**:
+
+```json
+[
+    {
+        "quantity" : "integer"
+    }
+]
+```
+
+**Respons**:
+
+```json
+[
+    {
+        "success" : "boolean"
+    }
+]
+```
+
 /chemist/plan
 
 /chemist/deliver
@@ -104,15 +137,3 @@ Response:
 
 /govt/plan
 
-
-
-```json
-[
-    {
-        "name": "string", 
-        "quantity": "integer", 
-        "price": "integer", 
-        "item_type": "string" /* can be narco, substance, or bid */
-    }
-]
-```
