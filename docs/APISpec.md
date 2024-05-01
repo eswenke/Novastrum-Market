@@ -86,3 +86,20 @@ Response:
 
 /govt/plan
 
+
+### Get Market Listings - `/market_listings/` (GET)
+
+Retrieves the a market listing. Each unique item combination should have only a single price.
+
+**Returns**:
+
+```json
+[
+    {
+        "name": "string", 
+        "quantity": "integer", 
+        "price": "integer", 
+        "item_type": "string" /* can be narco, substance, or bid */
+    }
+]
+```
