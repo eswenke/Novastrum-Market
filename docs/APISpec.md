@@ -23,7 +23,7 @@ NOT ALLOWED: can’t be miner, can’t be chemist …
 
 ## endpoints: 
 
-/status/civilian_id
+/civilian_id/status
 
 Request: (GET)
 [
@@ -36,7 +36,7 @@ Response:
   role: "String"
 }
 
-/inventory/civilian_id
+civilian_id/inventory
 
 Request: (GET)
 [
