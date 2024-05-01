@@ -32,9 +32,11 @@ Request: (GET)
 ]
 
 Response:
+```json
 {
   role: "String"
 }
+```
 
 civilian_id/inventory
 
