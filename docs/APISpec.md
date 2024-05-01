@@ -25,36 +25,37 @@ NOT ALLOWED: can’t be miner, can’t be chemist …
 
 /civilian_id/status
 
-Request: (GET)
+**Request:** (GET)
 [
   {
   }
 ]
 
-Response:
+**Response:**
 ```json
-{
-  role: "String"
-}
+[
+    {
+        "role": "string", 
+    }
+]
 ```
 
 civilian_id/inventory
 
-Request: (GET)
+**Request:** (GET)
 [
   {
   }
 ]
 
-Response:
-{
-  inventory: [
-    num_voidex: int
-    num_drugs: int
-    num_substances: null or int
-  ]
-}
-
+**Response:**
+[
+    {
+        "num_voidex": int,
+        "num_drugs": int,
+        "num_substances": null or int
+    }
+]
 
 /market_listings: {narcos{name, proportions of ms}, mineable substances:{name, planet-origin}}
 
@@ -65,17 +66,34 @@ Request: (GET)
 ]
 
 Response:
-{
-  inventory: [
-    num_voidex: int
-    num_drugs: int
-    num_substances: null or int
-  ]
-}
-
+``` json
+[
+    {
+        "item": Narco, Bid, Substance,
+        "item_id": int,
+        "name": "String",
+        "seller_id": "String",
+        "price": int,
+        "quantity": int
+    }
+]```
 
 /carts
 
+Request: (GET)
+``` json
+{
+  "civilian_id": int,
+  "transaction_id": int
+} ```
+
+Response:
+``` json
+[
+    {
+        "transaction_id": int
+    }
+]```
 /chemist/plan
 
 /chemist/deliver
@@ -87,11 +105,6 @@ Response:
 /govt/plan
 
 
-### Get Market Listings - `/market_listings/` (GET)
-
-Retrieves the a market listing. Each unique item combination should have only a single price.
-
-**Returns**:
 
 ```json
 [
