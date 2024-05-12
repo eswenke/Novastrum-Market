@@ -21,7 +21,7 @@ def get_inventory():
 @router.post("/plan")
 def get_promotion_plan():
     """ 
-    checks narco quota and executes role promotion if above the required amount.
+    gets civilian info, checks narco quota, and executes role promotion if above the required amount.
     tier 1- civilians
     tier 2- miners (5 narcos owned)
     tier 3- chemist (20 narcos owned)
