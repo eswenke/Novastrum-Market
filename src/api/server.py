@@ -22,15 +22,15 @@ app = FastAPI(
     },
 )
 
-origins = ["https://potion-exchange.vercel.app"]
+#origins = ["https://potion-exchange.vercel.app"]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "OPTIONS"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["GET", "OPTIONS"],
+#     allow_headers=["*"],
+# )
 
 app.include_router(inventory.router)
 app.include_router(carts.router)
