@@ -17,7 +17,7 @@ class Civilian(BaseModel):
     home: str # planet name ?
 
 @router.post("/")
-def start_transaction(new: Civilian.civilian_id):
+def start_transaction(new_cart: Civilian):
     """init a transaction, insert to transaction table with civ id"""
     return {"transaction_id": 1}
 
