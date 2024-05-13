@@ -1,7 +1,7 @@
 from fastapi import FastAPI, exceptions
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from src.api import carts, catalog, bottler, barrels, admin, info, inventory
+from src.api import admin, chemist, govt, info, inventory, market, transaction
 import json
 import logging
 import sys
@@ -22,21 +22,21 @@ app = FastAPI(
     },
 )
 
-origins = ["https://potion-exchange.vercel.app"]
+#origins = ["https://potion-exchange.vercel.app"]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "OPTIONS"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["GET", "OPTIONS"],
+#     allow_headers=["*"],
+# )
 
 app.include_router(inventory.router)
-app.include_router(carts.router)
-app.include_router(catalog.router)
-app.include_router(bottler.router)
-app.include_router(barrels.router)
+app.include_router(transaction.router)
+app.include_router(market.router)
+app.include_router(govt.router)
+app.include_router(chemist.router)
 app.include_router(admin.router)
 app.include_router(info.router)
 

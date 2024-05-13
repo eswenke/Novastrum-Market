@@ -11,33 +11,35 @@ router = APIRouter(
 
 @router.get("/audit")
 def get_inventory():
-    """ """
+    """ 
+    returns personal inventory
+    """
     
-    return {"number_of_potions": 0, "ml_in_barrels": 0, "gold": 0}
+    return {"num_narcos": 0, "num_substances": 0, "num_voidex": 0}
 
 # Gets called once a day
 @router.post("/plan")
-def get_capacity_plan():
+def get_promotion_plan():
     """ 
-    Start with 1 capacity for 50 potions and 1 capacity for 10000 ml of potion. Each additional 
-    capacity unit costs 1000 gold.
+    gets civilian info, checks narco quota, and executes role promotion if above the required amount.
+    tier 1- civilians
+    tier 2- miners (5 narcos owned)
+    tier 3- chemist (20 narcos owned)
+    tier 4- govt offical (30 narcos owned)
+
     """
 
-    return {
-        "potion_capacity": 0,
-        "ml_capacity": 0
-        }
+    return "OK" # || error if not enough to promote
 
 class CapacityPurchase(BaseModel):
     potion_capacity: int
     ml_capacity: int
 
 # Gets called once a day
-@router.post("/deliver/{order_id}")
-def deliver_capacity_plan(capacity_purchase : CapacityPurchase, order_id: int):
+@router.post("/reset")
+def reset_inventory():
     """ 
-    Start with 1 capacity for 50 potions and 1 capacity for 10000 ml of potion. Each additional 
-    capacity unit costs 1000 gold.
+    resets inventory to state 0 narcos, 0 substances, 100 voidex
     """
 
     return "OK"
