@@ -1,7 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from src.api import auth
+import sqlalchemy
+from src import database as db
 
-router = APIRouter()
-
+router = APIRouter(
+    prefix="/market_listings",
+    tags=["market"],
+    dependencies=[Depends(auth.get_api_key)],
+)
 
 @router.get("/market_listings/", tags=["market_listings"])
 def get_market_listings():

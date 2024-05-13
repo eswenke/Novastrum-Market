@@ -10,8 +10,9 @@ router = APIRouter(
 )
 
 class War(BaseModel):
-    name: str
-    type: list[str]
+    war_id: int
+    planet_1: str
+    planet_2: str
     bid: int
 
 @router.post("/deliver")
@@ -32,9 +33,10 @@ def get_war_plan():
     return [
             {
                 "war_id" : int,
-                "waring_planets": ["planet_1", "planet_2"],
-                "initial_bid" : int,
-                "length_bid" : int, # we can wait on this and add in complexity phase
+                "planet_1": "string",
+                "planet_2": "string",
+                "initial_bid" : int
+                # "length_bid" : int, **** we can wait on this and add in complexity phase
             }
         ]
 

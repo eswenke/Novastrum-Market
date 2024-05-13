@@ -10,7 +10,7 @@ router = APIRouter(
 
 class Narcotic(BaseModel):
     name: str
-    type: list[str]
+    # type: list[int] **** maybe add later for complexity?
     quantity: int
     price: int
     
@@ -33,7 +33,7 @@ def create_chemist_plan():
 
     return [
         {
-            "narco_type": [str],
+            "name": str,
             "quantity": int,
             "price": int
         }

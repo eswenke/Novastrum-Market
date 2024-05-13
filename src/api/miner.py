@@ -10,7 +10,7 @@ router = APIRouter(
 
 class Substance(BaseModel):
     name: str
-    planet_origin: str
+    planet_id: str
     quantity: int
     price: int
     
