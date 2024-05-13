@@ -12,9 +12,9 @@ router = APIRouter(
 class Civilian(BaseModel):
     civilian_id: int
     name: str
-    num_strikes: int
     role: str
     home: str # planet name ?
+    num_strikes: int
 
 @router.post("/")
 def start_transaction(new_cart: Civilian):

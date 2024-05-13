@@ -31,15 +31,12 @@ def get_promotion_plan():
 
     return "OK" # || error if not enough to promote
 
-class CapacityPurchase(BaseModel):
-    potion_capacity: int
-    ml_capacity: int
+class Promotion(BaseModel):
+    promotion: int
 
-# Gets called once a day
-@router.post("/reset")
-def reset_inventory():
-    """ 
-    resets inventory to state 0 narcos, 0 substances, 100 voidex
-    """
+@router.post("/deliver/{order_id}")
+def deliver_capacity_plan(promotion: Promotion, order_id: int):
 
-    return "OK"
+    return {
+        "promoted": "integer"
+    }
