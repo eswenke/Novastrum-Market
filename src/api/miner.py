@@ -18,24 +18,23 @@ class Substance(BaseModel):
     price: int
     
 @router.post("/deliver/{citizen_id}")
-def post_substance(citizen_id: int, substances: list[Substance]):
-    for substance in substances: 
-        cost = substance.price * substance.quantity
-        with db.engine.begin() as connection:
-            connection.execute(sqlalchemy.text(
-                        """
-                        INSERT INTO market (quantity, price, seller_id, name, type)
-                        VALUES (:quantity, :price, :id, :name, 'substances')
-                        """
-                        ), {"quantity": substance.quantity, "price": cost, 
-                            "id": citizen_id, "name":substance.name})
+def post_substance(citizen_id: int, substance: Substance):
+    cost = substance.price * substance.quantity
+    with db.engine.begin() as connection:
+        connection.execute(sqlalchemy.text(
+                    """
+                    INSERT INTO market (quantity, price, seller_id, name, type)
+                    VALUES (:quantity, :price, :id, :name, 'substances')
+                    """
+                    ), {"quantity": substance.quantity, "price": cost, 
+                        "id": citizen_id, "name":substance.name})
+    
+        # update inv to reflect selling status
+        connection.execute(sqlalchemy.text("""UPDATE inventory SET status = 'selling'
+                                           WHERE type = 'substances' AND citizen_id = :id"""),
+                                    {'id' : citizen_id})
         
-            # update inv to reflect selling status
-            connection.execute(sqlalchemy.text("""UPDATE inventory SET status = 'selling'
-                                            WHERE name = :subst_name AND citizen_id = :id"""),
-                                        {'subst_name': substance.name, 'id' : citizen_id})
-        
-    print(f"substances delievered: {substances}") 
+    print(f"substances delievered: {substance}") # each miner mines a single planets substance, only one returned
     return "OK"
 
 
