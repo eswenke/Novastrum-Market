@@ -87,11 +87,11 @@ def get_promotion_plan(citizen_id: int):
             role = role
         else:
             promotion = 1
-            if role == 'civilian' and num_narcos > 5:
+            if role == 'civilian' and num_narcos >= 5:
                 role = 'miner'
-            elif role == 'miner' and num_narcos > 20:
+            elif role == 'miner' and num_narcos >= 20:
                 role = 'chemist'
-            elif role == 'chemist' and num_narcos > 30:
+            elif role == 'chemist' and num_narcos >= 30:
                 role = 'govt'
 
     return {"promotion": promotion, "role": role} # || error if not enough to promote
