@@ -83,7 +83,7 @@ def get_promotion_plan(citizen_id: int):
             [{"citizen_id": citizen_id}]
         ).first()
 
-        if (role == 'civilian' and num_narcos < 5) or (role == 'miner' and num_narcos < 5) or (role == 'chemist' and num_narcos < 20) or (role == 'govt' and num_narcos < 30):
+        if (role == 'civilian' and num_narcos < 5) or (role == 'miner' and num_narcos < 20) or (role == 'chemist' and num_narcos < 30):
             role = role
         else:
             promotion = 1
