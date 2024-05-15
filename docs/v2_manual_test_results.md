@@ -28,6 +28,22 @@
 -- call govt deliver
 -- verify the space war has started in planets table/listing created on market for bidding
 
-endpoint curl tests:
+## endpoint curl tests:
+
+# example inventory audit test:
+curl -X 'GET' \
+  'https://novastrum-market.onrender.com/inventory/audit/3' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market'
+
+response:
+{
+  "num_narcos": 11,
+  "num_substances": 25,
+  "num_voidex": 100
+}
+
+# example inventory promotion test:
+
 
 
