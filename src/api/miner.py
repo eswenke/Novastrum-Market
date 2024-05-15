@@ -19,7 +19,7 @@ class Substance(BaseModel):
     
 @router.post("/deliver/{citizen_id}")
 def post_substance(citizen_id: int, substance: Substance):
-    cost = substance.price * substance.quantity
+    cost = substance.price * substance.quantity 
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text(
                     """
@@ -48,27 +48,19 @@ def create_miner_plan(citizen_id: int):
                                                         LEFT JOIN citizens ON substances.planet = citizens.planet WHERE citizens.id = id''')
                                                         , [{"id": citizen_id}]).scalar()
         
-        voidex = connection.execute(sqlalchemy.text('''SELECT quantity FROM inventory 
-                                                        WHERE type = 'voidex' AND citizens.id = id''')
-                                                        , [{"id": citizen_id}]).scalar()
-       
-        cap_mining = voidex // substances[1] #100//20 => 5 substances max
-        if cap_mining == 0: #if broke
-            return {}
-        
+        # voidex = connection.execute(sqlalchemy.text('''SELECT quantity FROM inventory 
+        #                                                 WHERE type = 'voidex' AND citizens.id = id''')
+        #                                                 , [{"id": citizen_id}]).scalar()
+    
+        cap_mining = substances[3] * 0.25 # can at most mine 1/4 of the planet
+        if cap_mining == 0: return {}
         mining_amt = rand.randint(0, cap_mining)
-        cost = substances[1] * mining_amt
 
 
         # substance added to miner inventory
         connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) 
                                             VALUES (:id, 'substances', :quant, :name, 'owned')"""),
                                    {'id' : citizen_id, 'quant' : mining_amt, 'name' : substances[0]})
-        
-        # cost of mining
-        connection.execute(sqlalchemy.text("""UPDATE inventory SET quantity = quantity - :cost
-                                           WHERE type = 'voidex' AND citizen_id = :cit_id"""),
-                                    {'cost' : cost, 'cit_id' : citizen_id})
         
     return [
         #Substance(substances[0], substances[2], mining_amt, substances[1])
