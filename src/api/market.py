@@ -28,7 +28,7 @@ def get_market_listings():
         
         for row in result:
             print(row)
-            id, quantity, price, seller_id, name, type, timestamp = row
+            id, name, type, price, quantity, seller_id, timestamp = row
             listings.append({
                 "name": name,
                 "type": type,
