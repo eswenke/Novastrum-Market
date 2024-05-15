@@ -44,6 +44,31 @@ response:
 }
 
 # example inventory promotion test:
+curl -X 'POST' \
+  'https://novastrum-market.onrender.com/inventory/plan/3' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
 
+response:
+{
+  "promotion": 0,
+  "role": "miner"
+}
+
+curl -X 'POST' \
+  'https://novastrum-market.onrender.com/inventory/deliver/3' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "promotion": 0,
+  "role": "miner"
+}'
+
+response:
+{
+  "promoted": 0
+}
 
 
