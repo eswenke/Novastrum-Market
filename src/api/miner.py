@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from src.api import auth
+from src import database as db
+import sqlalchemy
+import rand
 
 router = APIRouter(
     prefix="/civilian/miner",
@@ -14,23 +17,66 @@ class Substance(BaseModel):
     quantity: int
     price: int
     
-@router.post("/deliver")
-def post_substance(subst_delivered: list[Substance]):
-    """adds to substance table after mining, reduce miner voidex inventory"""
-
-    print(f"substances delievered: {subst_delivered}")
+@router.post("/deliver/{citizen_id}")
+def post_substance(citizen_id: int, substance: Substance):
+    cost = substance.price * substance.quantity
+    with db.engine.begin() as connection:
+        connection.execute(sqlalchemy.text(
+                    """
+                    INSERT INTO market (quantity, price, seller_id, name, type)
+                    VALUES (:quantity, :price, :id, :name, 'substances')
+                    """
+                    ), {"quantity": substance.quantity, "price": cost, 
+                        "id": citizen_id, "name":substance.name})
+    
+        # update inv to reflect selling status
+        connection.execute(sqlalchemy.text("""UPDATE inventory SET status = 'selling'
+                                           WHERE type = 'substances' AND citizen_id = :id"""),
+                                    {'id' : citizen_id})
+        
+        connection.execute(sqlalchemy.text("""UPDATE substances SET quantity = quantity - :quant
+                                           WHERE name = :name"""),
+                                    {'quant' : substance.quantity, 'name' : substance.name})
+    print(f"substances delievered: {substance}") # each miner mines a single planets substance, only one returned
     return "OK"
 
 
-@router.post("/plan")
-def create_miner_plan():
-    """ gets substances from current planet, creates plan for mining substance on planet """
+@router.post("/plan/{citizen_id}")
+def create_miner_plan(citizen_id: int):
+    with db.engine.begin() as connection:
+        substances = connection.execute(sqlalchemy.text('''SELECT substances.name, substances.price, substances.planet, substances.quantity FROM substances 
+                                                        LEFT JOIN citizens ON substances.planet = citizens.planet WHERE citizens.id = id''')
+                                                        , [{"id": citizen_id}]).scalar()
+        
+        voidex = connection.execute(sqlalchemy.text('''SELECT quantity FROM inventory 
+                                                        WHERE type = 'voidex' AND citizens.id = id''')
+                                                        , [{"id": citizen_id}]).scalar()
+       
+        cap_mining = voidex // substances[1] #100//20 => 5 substances max
+        if cap_mining == 0: #if broke
+            return {}
+        
+        mining_amt = rand.randint(0, cap_mining)
+        cost = substances[1] * mining_amt
 
+
+        # substance added to miner inventory
+        connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) 
+                                            VALUES (:id, 'substances', :quant, :name, 'owned')"""),
+                                   {'id' : citizen_id, 'quant' : mining_amt, 'name' : substances[0]})
+        
+        # cost of mining
+        connection.execute(sqlalchemy.text("""UPDATE inventory SET quantity = quantity - :cost
+                                           WHERE type = 'voidex' AND citizen_id = :cit_id"""),
+                                    {'cost' : cost, 'cit_id' : citizen_id})
+        
     return [
+        #Substance(substances[0], substances[2], mining_amt, substances[1])
         {
-            "name": "string",
-            "quantity": int,
-            "price": int
+            "name": substances[0],
+            "planet_id": substances[2],
+            "quantity": mining_amt,
+            "price": substances[1]
         }
     ]
 
