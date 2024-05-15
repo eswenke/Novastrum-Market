@@ -34,6 +34,9 @@ def post_substance(citizen_id: int, substance: Substance):
                                            WHERE type = 'substances' AND citizen_id = :id"""),
                                     {'id' : citizen_id})
         
+        connection.execute(sqlalchemy.text("""UPDATE substances SET quantity = quantity - :quant
+                                           WHERE name = :name"""),
+                                    {'quant' : substance.quantity, 'name' : substance.name})
     print(f"substances delievered: {substance}") # each miner mines a single planets substance, only one returned
     return "OK"
 
