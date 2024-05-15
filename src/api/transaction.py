@@ -62,8 +62,9 @@ def checkout(transaction_id: int):
     add voidex to seller_id inventory, 
     subtract product from seller inv, 
     add to buyer inv"""
-    
 
+    # need to make sure the listing gets taken off the market
+    
     with db.engine.begin() as connection:
         price = connection.execute(
             sqlalchemy.text(
@@ -107,7 +108,7 @@ def checkout(transaction_id: int):
             ),
             [{"price": price, "transaction_id": transaction_id}]
         )
-        
+
         seller_id = connection.execute(
             sqlalchemy.text(
                 """
