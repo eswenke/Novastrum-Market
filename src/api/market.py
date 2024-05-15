@@ -9,19 +9,33 @@ router = APIRouter(
     dependencies=[Depends(auth.get_api_key)],
 )
 
-@router.get("/market_listings/", tags=["market_listings"])
+@router.get("/")
 def get_market_listings():
     """
     returns all listings on the market. 
     """
 
-    return [
-            {
-                "seller_id": int,
-                "product_type": "text",
-                "product_sku": "text",
-                "quantity": int,
-                "price": 50,
+    listings = []
 
-            }
-        ]
+    with db.engine.begin() as connection:
+        result = connection.execute(
+                sqlalchemy.text(
+                    """
+                    SELECT * FROM market
+                    """
+                )
+            ).fetchall()
+        
+        for row in result:
+            print(row)
+            id, quantity, price, seller_id, name, type, timestamp = row
+            listings.append({
+                "name": name,
+                "type": type,
+                "quantity": quantity,
+                "price": price,
+                "seller id": seller_id,
+                "listing id": id
+            })
+        
+    return listings
