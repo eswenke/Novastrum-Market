@@ -37,7 +37,7 @@ def start_transaction(new_cart: Civilian):
     return {"transaction_id": id}
 
 
-@router.post("/{transaction_id}/{listing_id}")
+@router.post("/items/{transaction_id}/{listing_id}")
 def add_items(transaction_id: int, listing_id: int):
     """insert item into transaction_items table with product_sku"""
 
@@ -56,14 +56,12 @@ def add_items(transaction_id: int, listing_id: int):
     return "OK"
 
 
-@router.post("/{transaction_id}/checkout")
+@router.post("/checkout/{transaction_id}")
 def checkout(transaction_id: int):
     """subtract voidex from inventory, 
     add voidex to seller_id inventory, 
     subtract product from seller inv, 
     add to buyer inv"""
-
-    # need to make sure the listing gets taken off the market
     
     with db.engine.begin() as connection:
         price = connection.execute(
@@ -119,7 +117,7 @@ def checkout(transaction_id: int):
                     WHERE transaction_items.transaction_id = :transaction_id
                 ),
                 source AS (
-                    SELECT market.seller_id as seller, market.quantity as quantity, market.type as type, market.name as name, 'owned' as status
+                    SELECT market.seller_id as seller, market.quantity as quantity, market.type as type, market.name as name, 'selling' as status
                     FROM target
                     JOIN market ON listing = market.id
                     ORDER BY market.timestamp desc
@@ -136,7 +134,7 @@ def checkout(transaction_id: int):
             [{"transaction_id": transaction_id}]
         ).scalar_one()
 
-        quantity = connection.execute(
+        connection.execute(
             sqlalchemy.text(
                 """
                 UPDATE inventory
@@ -147,17 +145,18 @@ def checkout(transaction_id: int):
                 """
             ),
             [{"price": price, "seller_id": seller_id}]
-        ).scalar_one()
+        )
 
-        connection.execute(
+        quantity = connection.execute(
             sqlalchemy.text(
                 """
                 DELETE FROM market
                 WHERE id = (SELECT listing_id FROM transaction_items WHERE transaction_id = :transaction_id)
+                RETURNING quantity
                 """
             ), 
             [{"transaction_id": transaction_id}]
-        )
+        ).scalar_one()
 
     #   CASE govt:
     #       bid logic, do at a later time for complexity reasons
