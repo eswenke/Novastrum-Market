@@ -12,14 +12,20 @@ router = APIRouter(
 
 class Narcotic(BaseModel):
     name: str
-    # type: list[int] **** maybe add later for complexity?
     quantity: int
     price: int
+    # type: list[int] **** maybe add later for complexity?
     
-@router.post("/deliver")
-def post_market_listings(narcos_delivered: list[Narcotic]):
+@router.post("/deliver/{citizen_id}")
+def post_market_listings(narcos_delivered: list[Narcotic], citizen_id:int):
     """insert narcos to market listings table,
     * [seller_id, type = narco, prod_sku, quant, price]"""
+
+    with db.engine.begin() as connection:
+        for narco in narcos_delivered: # Switch "owned" to selling, insert listing into market
+            connection.execute(sqlalchemy.text("UPDATE inventory SET status = 'selling' WHERE name = :drug_name and citizen_id = :cit_id"),
+                                    {'name' : narco[0], 'cit_id' : citizen_id})
+
 
     print(f"narcos delievered: {narcos_delivered}")
     return "OK"
@@ -53,11 +59,12 @@ def create_chemist_plan(citizen_id: int):
                 # Update substance stores, increase drug stores
                 connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity - :subst_lost WHERE name = :subst_name and citizen_id = :cit_id"),
                                     {'subst_lost' : subst_lost, 'name' : subst[0], 'cit_id' : citizen_id})
-                # Update vs insert if drug not already in there
-                connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity + :drug_gain WHERE name = :drug_name and citizen_id = :cit_id"),
+                # If drug already in inventory, update, else insert new row
+                if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'owned'"), {'name' : drug_name}).scalar():
+                    connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity + :drug_gain WHERE name = :drug_name and citizen_id = :cit_id"),
                                     {'drug_gain' : drug_quant, 'name' : drug_name, 'cit_id' : citizen_id})
-                
-                connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) VALUES (:cit_id, 'narcos', :quant, :name, 'owned')"""),
-                                   {'cit_id' : citizen_id, 'quant' : drug_quant, 'name' : drug_name})
+                else:
+                    connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) VALUES (:cit_id, 'narcos', :quant, :name, 'owned')"""),
+                                    {'cit_id' : citizen_id, 'quant' : drug_quant, 'name' : drug_name})
 
     return ret
