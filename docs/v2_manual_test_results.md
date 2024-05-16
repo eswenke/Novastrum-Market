@@ -123,7 +123,7 @@ response:
 * substance status changed to selling under miner's inventory
 * substance quantity on planet decremented
 
-##example govt deliver test:
+## example govt deliver test:
 
 curl -X 'POST' \
   'https://novastrum-market-5c9l.onrender.com/civilian/govt/deliver' \
