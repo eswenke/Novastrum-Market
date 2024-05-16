@@ -25,33 +25,33 @@ def commence_wars(wars_commenced: list[War]):
     with db.engine.begin() as connection:
         print(f"wars commenced: {wars_commenced}")
         for war in wars_commenced:
-                # status of planets updated to waring
-                connection.execute(sqlalchemy.text(
-                    """
-                    UPDATE planets
-                    SET war_id = :war_id
-                    WHERE planet IN (:planet_1, :planet_2)
-                    """
-                ), {'war_id': war.war_id, 'planet_1': war.planet_1, 'planet_2': war.planet_2})
+            # status of planets updated to waring
+            connection.execute(sqlalchemy.text(
+                """
+                UPDATE planets
+                SET war_id = :war_id
+                WHERE planet IN (:planet_1, :planet_2)
+                """
+            ), {'war_id': war.war_id, 'planet_1': war.planet_1, 'planet_2': war.planet_2})
 
-                # place new war into war table
-                connection.execute(sqlalchemy.text(
-                    """
-                    INSERT INTO wars (id, planet_1, planet_2)
-                    VALUES (:war_id, :planet_1, :planet_2)
-                    """
-                ), {'war_id': war.war_id, 'planet_1': war.planet_1, 'planet_2': war.planet_2})
+            # place new war into war table with conflict handling
+            connection.execute(sqlalchemy.text(
+                """
+                INSERT INTO wars (id, planet_1, planet_2)
+                VALUES (:war_id, :planet_1, :planet_2)
+                ON CONFLICT (id) DO NOTHING
+                """
+            ), {'war_id': war.war_id, 'planet_1': war.planet_1, 'planet_2': war.planet_2})
 
-                # post new war to market
-                connection.execute(sqlalchemy.text(
-                    """
-                    INSERT INTO market (seller_id, type, name, quantity, price)
-                    VALUES (:seller_id, :type, :name, :quantity, :price)
-                    """
-                ), {'seller_id': 1, 'type': 'wars', 'name': str(war.war_id), 'quantity': 1, 'price': war.bid})
+            # post new war to market
+            connection.execute(sqlalchemy.text(
+                """
+                INSERT INTO market (seller_id, type, name, quantity, price)
+                VALUES (:seller_id, :type, :name, :quantity, :price)
+                """
+            ), {'seller_id': 1, 'type': 'wars', 'name': str(war.war_id), 'quantity': 1, 'price': war.bid})
 
     return "OK"
-
 @router.post("/plan")
 def get_war_plan():
     """
