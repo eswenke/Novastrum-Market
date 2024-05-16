@@ -49,7 +49,7 @@ def commence_wars(wars_commenced: list[War]):
                 INSERT INTO market (seller_id, type, name, quantity, price)
                 VALUES (:seller_id, :type, :name, :quantity, :price)
                 """
-            ), {'seller_id': 1, 'type': 'wars', 'name': str(war.war_id), 'quantity': 1, 'price': war.bid})
+            ), {'seller_id': 1, 'type': 'wars', 'name': f"War between {war.planet_1} and {war.planet_2}", 'quantity': 1, 'price': war.bid})
 
     return "OK"
 @router.post("/plan")
