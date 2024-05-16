@@ -60,7 +60,7 @@ def get_war_plan():
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT planet FROM planets WHERE war_id = 1"))
-        planets = [row['planet'] for row in result]
+        planets = [row[0] for row in result]  # Accessing the first element of the tuple
         
         if len(planets) < 2:
             return []
