@@ -159,7 +159,7 @@ response:
   response:
   	
 Response body
-Download
+'''json
 [
   {
     "war_id": 1,
@@ -174,7 +174,7 @@ Download
     "initial_bid": 100
   }
 ]
-
+'''
 * randomly pairs planets for war
 
 
