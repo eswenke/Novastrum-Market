@@ -54,7 +54,7 @@ def commence_wars(wars_commenced: list[War], citizen_id: int):
     return "OK"
 
 
-@router.post("/plan/{citizen_id}")
+@router.post("/plan")
 def get_war_plan():
     """
     gets planet status, randomly pairs up planets for wars 
