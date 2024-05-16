@@ -159,7 +159,7 @@ response:
   response:
   	
 Response body
-'''json
+```json
 [
   {
     "war_id": 1,
@@ -174,7 +174,7 @@ Response body
     "initial_bid": 100
   }
 ]
-'''
+```
 * randomly pairs planets for war
 
 
