@@ -123,4 +123,58 @@ response:
 * substance status changed to selling under miner's inventory
 * substance quantity on planet decremented
 
+##example govt deliver test:
+
+curl -X 'POST' \
+  'https://novastrum-market-5c9l.onrender.com/civilian/govt/deliver' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -H 'Content-Type: application/json' \
+  -d '[
+  {
+    "war_id": 1,
+    "planet_1": "Pyre",
+    "planet_2": "Ecliptix",
+    "bid": 0
+  }
+]'
+
+response:
+```json
+{
+    "OK"
+}
+```
+* status of planets updated to waring
+* place new war into market with bid
+
+  ## example govt plan test
+
+  curl -X 'POST' \
+  'https://novastrum-market-5c9l.onrender.com/civilian/govt/plan' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
+
+  response:
+  	
+Response body
+Download
+[
+  {
+    "war_id": 1,
+    "planet_1": "Zentharis",
+    "planet_2": "Ecliptix",
+    "initial_bid": 100
+  },
+  {
+    "war_id": 2,
+    "planet_1": "Lyxion IV",
+    "planet_2": "Sylvaria",
+    "initial_bid": 100
+  }
+]
+
+* randomly pairs planets for war
+
 
