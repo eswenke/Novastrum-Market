@@ -20,7 +20,7 @@
 - get market to verify the listings have been taken off
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/civilian/miner/plan/2' \
+  'https://novastrum-market.onrender.com/civilian/miner/plan/2' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -36,7 +36,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/civilian/miner/deliver/2' \
+  'https://novastrum-market.onrender.com/civilian/miner/deliver/2' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
@@ -53,7 +53,7 @@ response:
 ```
 
 curl -X 'GET' \
-  'http://127.0.0.1:8000/market_listings/' \
+  'https://novastrum-market.onrender.com/market_listings/' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market'
 
@@ -72,7 +72,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/transaction/' \
+  'https://novastrum-market.onrender.com/transaction/' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
@@ -92,7 +92,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/transaction/items/1/1' \
+  'https://novastrum-market.onrender.com/transaction/items/1/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -103,7 +103,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/transaction/checkout/1' \
+  'https://novastrum-market.onrender.com/transaction/checkout/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -117,7 +117,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/civilian/chemist/plan/3' \
+  'https://novastrum-market.onrender.com/civilian/chemist/plan/3' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -134,7 +134,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/civilian/chemist/deliver/3' \
+  'https://novastrum-market.onrender.com/civilian/chemist/deliver/3' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
@@ -152,7 +152,7 @@ response:
 ```
 
 curl -X 'GET' \
-  'http://127.0.0.1:8000/market_listings/' \
+  'https://novastrum-market.onrender.com/market_listings/' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market'
 
@@ -171,7 +171,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/transaction/' \
+  'https://novastrum-market.onrender.com/transaction/' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
@@ -191,7 +191,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/transaction/items/2/2' \
+  'https://novastrum-market.onrender.com/transaction/items/2/2' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -202,7 +202,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/transaction/checkout/2' \
+  'https://novastrum-market.onrender.com/transaction/checkout/2' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -216,7 +216,7 @@ response:
 ```
 
 curl -X 'GET' \
-  'http://127.0.0.1:8000/inventory/audit/1' \
+  'https://novastrum-market.onrender.com/inventory/audit/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market'
 
@@ -230,7 +230,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/inventory/plan/1' \
+  'https://novastrum-market.onrender.com/inventory/plan/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -244,7 +244,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/inventory/deliver/1' \
+  'https://novastrum-market.onrender.com/inventory/deliver/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
@@ -271,7 +271,7 @@ response:
 - verify the space war has started in planets table/listing created on market for bidding
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/civilian/govt/plan' \
+  'https://novastrum-market.onrender.com/civilian/govt/plan' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -295,7 +295,7 @@ response:
 ```
 
 curl -X 'POST' \
-  'http://127.0.0.1:8000/civilian/govt/deliver/4' \
+  'https://novastrum-market.onrender.com/civilian/govt/deliver/4' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
@@ -319,7 +319,7 @@ curl -X 'POST' \
 ```
 
 curl -X 'GET' \
-  'http://127.0.0.1:8000/market_listings/' \
+  'https://novastrum-market.onrender.com/market_listings/' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market'
 
