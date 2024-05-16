@@ -19,36 +19,218 @@
 - call inventory on audit on the citizen's id, miner's id, chemist's id
 - get market to verify the listings have been taken off
 
-## PROMOTION FLOW
-- assuming a citizen has x amount of inventory greater than their threshold (maunally put in or through the pipeline)
-- call promotion plan on that citizen's id
-- call promotion deliver on that citizen's id
-- verify they are now promoted
+curl -X 'POST' \
+  'http://127.0.0.1:8000/civilian/miner/plan/2' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
 
-## GOVT FLOW:
-- call govt plan
-- call govt deliver
-- verify the space war has started in planets table/listing created on market for bidding
+response:
+```json
+{
+  "name": "Siltrite",
+  "planet": "Lyxion IV",
+  "quantity": 218,
+  "price": 2
+}
+```
 
-# endpoint curl tests:
-## example inventory audit test:
+curl -X 'POST' \
+  'http://127.0.0.1:8000/civilian/miner/deliver/2' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "Siltrite",
+  "planet": "Lyxion IV",
+  "quantity": 218,
+  "price": 2
+}'
+
+response:
+```json
+"OK"
+```
+
 curl -X 'GET' \
-  'https://novastrum-market.onrender.com/inventory/audit/3' \
+  'http://127.0.0.1:8000/market_listings/' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market'
+
+response:
+```json
+[
+  {
+    "name": "Siltrite",
+    "type": "substance",
+    "quantity": 218,
+    "price": 436,
+    "seller id": 2,
+    "listing id": 1
+  }
+]
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/transaction/' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "civilian_id": 3,
+  "name": "citizen 3",
+  "role": "chemist",
+  "home": "Zentharis",
+  "num_strikes": 0
+}'
+
+response:
+```json
+{
+  "transaction_id": 1
+}
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/transaction/items/1/1' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
+
+response:
+```json
+"OK"
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/transaction/checkout/1' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
+
+response:
+```json
+{
+  "quantity": 218,
+  "voidex_paid": 436
+}
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/civilian/chemist/plan/3' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
+
+response:
+```json
+[
+  {
+    "name": "SLT",
+    "quantity": 21,
+    "price": 8
+  }
+]
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/civilian/chemist/deliver/3' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -H 'Content-Type: application/json' \
+  -d '[
+  {
+    "name": "SLT",
+    "quantity": 21,
+    "price": 8
+  }
+]'
+
+response:
+```json
+"OK"
+```
+
+curl -X 'GET' \
+  'http://127.0.0.1:8000/market_listings/' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market'
+
+response:
+```json
+[
+  {
+    "name": "SLT",
+    "type": "narcos",
+    "quantity": 21,
+    "price": 168,
+    "seller id": 3,
+    "listing id": 2
+  }
+]
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/transaction/' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "civilian_id": 1,
+  "name": "citizen 1",
+  "role": "civilian",
+  "home": "Pyre",
+  "num_strikes": 0
+}'
+
+response:
+```json
+{
+  "transaction_id": 2
+}
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/transaction/items/2/2' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
+
+response:
+```json
+"OK"
+```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/transaction/checkout/2' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
+
+response:
+```json
+{
+  "quantity": 21,
+  "voidex_paid": 168
+}
+```
+
+curl -X 'GET' \
+  'http://127.0.0.1:8000/inventory/audit/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market'
 
 response:
 ```json
 {
-    "num_narcos": 11,
-    "num_substances": 25,
-    "num_voidex": 100
+  "num_narcos": 21,
+  "num_substances": 0,
+  "num_voidex": 332
 }
 ```
 
-## example inventory promotion test:
 curl -X 'POST' \
-  'https://novastrum-market.onrender.com/inventory/plan/3' \
+  'http://127.0.0.1:8000/inventory/plan/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
@@ -56,125 +238,111 @@ curl -X 'POST' \
 response:
 ```json
 {
-  "promotion": 0,
+  "promotion": 1,
   "role": "miner"
 }
 ```
 
 curl -X 'POST' \
-  'https://novastrum-market.onrender.com/inventory/deliver/3' \
+  'http://127.0.0.1:8000/inventory/deliver/1' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
   -d '{
-  "promotion": 0,
+  "promotion": 1,
   "role": "miner"
 }'
 
 response:
 ```json
 {
-  "promoted": 0
+  "promoted": 1
 }
 ```
 
-## example miner plan test:
+- citizen 1, in a former civilian role, is now promoted to the role of 'miner'
+- inventories of everyone involved in the pipeline have been updated appropriately
+- market listings that were utilized are no longer on the market
+
+
+## GOVT FLOW:
+- call govt plan
+- call govt deliver
+- verify the space war has started in planets table/listing created on market for bidding
+
 curl -X 'POST' \
-  'https://novastrum-market.onrender.com/civilian/miner/plan/2' \
+  'http://127.0.0.1:8000/civilian/govt/plan' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -d ''
-  
+
 response:
 ```json
 [
   {
-    "name": "slith",
-    "planet_id": "sylvaria",
-    "quantity": 2,
-    "price": 15
+    "war_id": 2,
+    "planet_1": "Zentharis",
+    "planet_2": "Ecliptix",
+    "bid": 100
+  },
+  {
+    "war_id": 3,
+    "planet_1": "Lyxion IV",
+    "planet_2": "Sylvaria",
+    "bid": 100
   }
 ]
 ```
-* substance successfully added to miner's inventory with status 'owned'
-* substance mining amount selected at random, not more than 1/4 of planet's total substance quantity
-
-
-## example miner deliver test:
-curl -X 'POST' \
-  'https://novastrum-market.onrender.com/civilian/miner/deliver/2' \
-  -H 'accept: application/json' \
-  -H 'access_token: novastrum-market' \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "name": "slith",
-    "planet_id": "sylvaria",
-    "quantity": 2,
-    "price": 15
-  }'
-
-response:
-```json
-{
-    "OK"
-}
-```
-* substance successfully added to market
-* substance status changed to selling under miner's inventory
-* substance quantity on planet decremented
-
-## example govt deliver test:
 
 curl -X 'POST' \
-  'https://novastrum-market-5c9l.onrender.com/civilian/govt/deliver' \
+  'http://127.0.0.1:8000/civilian/govt/deliver/4' \
   -H 'accept: application/json' \
   -H 'access_token: novastrum-market' \
   -H 'Content-Type: application/json' \
   -d '[
   {
-    "war_id": 1,
-    "planet_1": "Pyre",
+    "war_id": 2,
+    "planet_1": "Zentharis",
     "planet_2": "Ecliptix",
-    "bid": 0
+    "bid": 100
+  },
+  {
+    "war_id": 3,
+    "planet_1": "Lyxion IV",
+    "planet_2": "Sylvaria",
+    "bid": 100
   }
 ]'
 
-response:
 ```json
-{
-    "OK"
-}
+"OK"
 ```
-* status of planets updated to waring
-* place new war into market with bid
 
-  ## example govt plan test
-
-  curl -X 'POST' \
-  'https://novastrum-market-5c9l.onrender.com/civilian/govt/plan' \
+curl -X 'GET' \
+  'http://127.0.0.1:8000/market_listings/' \
   -H 'accept: application/json' \
-  -H 'access_token: novastrum-market' \
-  -d ''
+  -H 'access_token: novastrum-market'
 
-  response:
-  	
-Response body
 ```json
 [
   {
-    "war_id": 1,
-    "planet_1": "Zentharis",
-    "planet_2": "Ecliptix",
-    "initial_bid": 100
+    "name": "2",
+    "type": "wars",
+    "quantity": 1,
+    "price": 100,
+    "seller id": 4,
+    "listing id": 3
   },
   {
-    "war_id": 2,
-    "planet_1": "Lyxion IV",
-    "planet_2": "Sylvaria",
-    "initial_bid": 100
+    "name": "3",
+    "type": "wars",
+    "quantity": 1,
+    "price": 100,
+    "seller id": 4,
+    "listing id": 4
   }
 ]
 ```
-* randomly pairs planets for war
 
-
+- 2 wars have been started
+- getting market listings shows they have been listed on the market with minimum bid pricing
