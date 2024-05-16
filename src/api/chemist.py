@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from src.api import auth
 
 router = APIRouter(
-    prefix="/civilian/miner",
-    tags=["miner"],
+    prefix="/civilian/chemist",
+    tags=["chemist"],
     dependencies=[Depends(auth.get_api_key)],
 )
 

@@ -149,6 +149,16 @@ def checkout(transaction_id: int):
             [{"price": price, "seller_id": seller_id}]
         ).scalar_one()
 
+        connection.execute(
+            sqlalchemy.text(
+                """
+                DELETE FROM market
+                WHERE id = (SELECT listing_id FROM transaction_items WHERE transaction_id = :transaction_id)
+                """
+            ), 
+            [{"transaction_id": transaction_id}]
+        )
+
     #   CASE govt:
     #       bid logic, do at a later time for complexity reasons
     #       civilians who bid will pick a side to bet on (higher than the minimum bet set in the listing)
