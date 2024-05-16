@@ -78,4 +78,49 @@ response:
 }
 ```
 
+## example miner plan test:
+curl -X 'POST' \
+  'https://novastrum-market.onrender.com/civilian/miner/plan/2' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -d ''
+  
+response:
+```json
+[
+  {
+    "name": "slith",
+    "planet_id": "sylvaria",
+    "quantity": 2,
+    "price": 15
+  }
+]
+```
+* substance successfully added to miner's inventory with status 'owned'
+* substance mining amount selected at random, not more than 1/4 of planet's total substance quantity
+
+
+## example miner deliver test:
+curl -X 'POST' \
+  'https://novastrum-market.onrender.com/civilian/miner/deliver/2' \
+  -H 'accept: application/json' \
+  -H 'access_token: novastrum-market' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "slith",
+    "planet_id": "sylvaria",
+    "quantity": 2,
+    "price": 15
+  }'
+
+response:
+```json
+{
+    "OK"
+}
+```
+* substance successfully added to market
+* substance status changed to selling under miner's inventory
+* substance quantity on planet decremented
+
 
