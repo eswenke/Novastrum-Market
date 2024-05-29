@@ -28,11 +28,11 @@ def commence_wars(wars_commenced: list[War], citizen_id: int):
             # place new war into war table with conflict handling
             connection.execute(sqlalchemy.text(
                 """
-                INSERT INTO wars (id, planet_1, planet_2)
-                VALUES (:id, :planet_1, :planet_2)
+                INSERT INTO wars (id, planet_1, planet_2, citizen_id)
+                VALUES (:id, :planet_1, :planet_2, :citizen_id)
                 ON CONFLICT (id) DO NOTHING
                 """
-            ), {'id': war.war_id , 'planet_1': war.planet_1, 'planet_2': war.planet_2})
+            ), {'id': war.war_id , 'planet_1': war.planet_1, 'planet_2': war.planet_2, 'citizen_id': citizen_id})
 
             # status of planets updated to waring
             connection.execute(sqlalchemy.text(
