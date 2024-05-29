@@ -5,6 +5,7 @@ from src.api import auth
 import sqlalchemy
 from src import database as db
 from src.api.govt import War
+import src.api.citizen as citizen
 import random
 
 router = APIRouter(
@@ -17,7 +18,11 @@ router = APIRouter(
 def make_bid(war_id: int, bid: int, planet: str):
     """make a bid on the war"""
     
-    citizen_id = 0    # PLACEHOLDER UNTIL SRI IS DONE WITH LOGIN STUFF
+    if citizen.cit_id < 0:
+        return "ERROR: Not logged in."
+    
+    if citizen.role != 'govt':
+        return "Not authorized. You must be a government official to access this service."
 
     with db.engine.begin() as connection:
         min_bid = connection.execute(
@@ -51,7 +56,7 @@ def make_bid(war_id: int, bid: int, planet: str):
                 from inventory
                 where type = 'voidex' and citizen_id = :citizen_id
                 """
-            ), [{"citizen_id": citizen_id}]
+            ), [{"citizen_id": citizen.cit_id}]
         )
 
         if gold < min_bid or gold < bid:
@@ -63,7 +68,7 @@ def make_bid(war_id: int, bid: int, planet: str):
                 insert into bids (citizen_id, war_id, bid_amount, planet)
                 values (:citizen_id, :war_id, :gold, :planet)
                 """
-            ), [{"citizen_id": citizen_id, "war_id": war_id, "gold": gold, "planet": planet}]
+            ), [{"citizen_id": citizen.cit_id, "war_id": war_id, "gold": gold, "planet": planet}]
         )
         
     return "OK"
