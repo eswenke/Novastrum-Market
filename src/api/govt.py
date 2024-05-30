@@ -16,7 +16,7 @@ class War(BaseModel):
     war_id: int
     planet_1: str
     planet_2: str
-    bid: int
+    min_bid: int
 
 @router.post("/deliver/{citizen_id}")
 def commence_wars(wars_commenced: list[War], citizen_id: int):
@@ -29,10 +29,10 @@ def commence_wars(wars_commenced: list[War], citizen_id: int):
             connection.execute(sqlalchemy.text(
                 """
                 INSERT INTO wars (id, planet_1, planet_2, citizen_id)
-                VALUES (:id, :planet_1, :planet_2, :citizen_id)
+                VALUES (:id, :planet_1, :planet_2, :citizen_id, :min_bid)
                 ON CONFLICT (id) DO NOTHING
                 """
-            ), {'id': war.war_id , 'planet_1': war.planet_1, 'planet_2': war.planet_2, 'citizen_id': citizen_id})
+            ), {'id': war.war_id , 'planet_1': war.planet_1, 'planet_2': war.planet_2, 'citizen_id': citizen_id, 'min_bid': war.min_bid})
 
             # status of planets updated to waring
             connection.execute(sqlalchemy.text(
@@ -42,14 +42,6 @@ def commence_wars(wars_commenced: list[War], citizen_id: int):
                 WHERE planet IN (:planet_1, :planet_2)
                 """
             ), {'war_id': war.war_id, 'planet_1': war.planet_1, 'planet_2': war.planet_2})
-
-            # post new war to market
-            connection.execute(sqlalchemy.text(
-                """
-                INSERT INTO market (seller_id, type, name, quantity, price)
-                VALUES (:seller_id, :type, :name, :quantity, :price)
-                """
-            ), {'seller_id': citizen_id, 'type': 'wars', 'name': str(war.war_id), 'quantity': 1, 'price': war.bid})
 
     return "OK"
 

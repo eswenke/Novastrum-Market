@@ -158,18 +158,4 @@ def checkout(transaction_id: int):
             [{"transaction_id": transaction_id}]
         ).scalar_one()
 
-    #   CASE govt:
-    #       bid logic, do at a later time for complexity reasons
-    #       civilians who bid will pick a side to bet on (higher than the minimum bet set in the listing)
-    #       civilian bid id set to that war_id in the listing's 'name', 
-    #           store the amount they bid, and what planet they bid on
-    #       need a way to keep track of the total bids for either side
-    #       once that war comes to a close, civilians who bid on the winning planet get 2.5x their bid
-    #       those who bid on the losing planet will get nothing
-    #       the govt official who created the bid gets all the losing bid money
-    #       potentially create a bid file with bid plan/deliver?
-
-    # before testing:
-    #   NEED TO GIVE ALL CIVILIANS AT LEAST 100 VOIDEX AS DEFAULT INVENTORY.
-
     return {"quantity": quantity, "voidex_paid": price}

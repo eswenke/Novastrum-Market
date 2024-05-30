@@ -20,9 +20,6 @@ def make_bid(war_id: int, bid: int, planet: str):
     
     if citizen.cit_id < 0:
         return "ERROR: Not logged in."
-    
-    if citizen.role != 'govt':
-        return "Not authorized. You must be a government official to access this service."
 
     with db.engine.begin() as connection:
         min_bid = connection.execute(
@@ -30,24 +27,12 @@ def make_bid(war_id: int, bid: int, planet: str):
                 """ 
                 select price
                 from market
-                where type = 'bids' and name = :war_id
+                where type = 'wars' and name = :war_id
                 """
-            ), [{"war_id": war_id}]
+            ), [{"war_id": str(war_id)}]
         ).scalar_one
 
-
         print(f"war bid on: {war_id}")
-
-        # PLAN:
-        #   check if logged in (wait for sri to finish that)
-        #   check our inventory based on our citizen_id
-        #       make sure we have enough gold to make the minimum bid
-        #       make sure we have enough gold to make the given bid
-        #       if so, add this bid to the bids table with citizen_id, war_id, bid_amount, planet
-        #   don't need to return anything
-
-        # if user.login == -1
-        #   return "error: user not logged in"
 
         gold = connection.execute(
             sqlalchemy.text(
@@ -57,7 +42,7 @@ def make_bid(war_id: int, bid: int, planet: str):
                 where type = 'voidex' and citizen_id = :citizen_id
                 """
             ), [{"citizen_id": citizen.cit_id}]
-        )
+        ).scalar_one()
 
         if gold < min_bid or gold < bid:
             return "ERROR: not enough gold"
@@ -78,10 +63,11 @@ def make_bid(war_id: int, bid: int, planet: str):
 def end_bidding(war: War):
     """ end the war and awards all winning bids """
 
-    # if user.login == -1
-    #   return "error: user not logged in"
-    # if user.role != "govt"
-    #   return "error: current role does not have this privilege"
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
+    
+    if citizen.role != 'govt':
+        return "ERROR: only government official's have access to this role."
 
     winner = random.random()
 
@@ -151,3 +137,34 @@ def end_bidding(war: War):
 
 
     return
+
+@router.post("/get_wars")
+def get_wars():
+    """make a bid on the war"""
+    
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
+
+    with db.engine.begin() as connection:
+        result = connection.execute(
+            sqlalchemy.text(
+                """ 
+                select * from wars
+                """
+            )
+        ).fetchall()
+
+        wars = []
+        
+        for row in result:
+            print(row)
+            id, planet_1, planet_2, citizen_id, min_bid = row
+            wars.append({
+                "id": id,
+                "planet 1": planet_1,
+                "planet 2": planet_2,
+                "citizen id": citizen_id,
+                "min bid": min_bid
+            })
+        
+    return wars
