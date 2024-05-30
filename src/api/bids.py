@@ -128,8 +128,8 @@ def end_bidding(war: War):
         connection.execute(
             sqlalchemy.text(
                 """
-                DELETE FROM market
-                WHERE name = :war_id
+                DELETE FROM wars
+                WHERE id = :war_id
                 """
             ), 
             [{"war_id": str(war.war_id)}]
