@@ -25,9 +25,9 @@ def make_bid(war_id: int, bid: int, planet: str):
         min_bid = connection.execute(
             sqlalchemy.text(
                 """ 
-                select price
-                from market
-                where type = 'wars' and name = :war_id
+                select min_bid
+                from wars
+                where id = :war_id
                 """
             ), [{"war_id": str(war_id)}]
         ).scalar_one
