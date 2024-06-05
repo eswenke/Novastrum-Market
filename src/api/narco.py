@@ -40,7 +40,7 @@ def post_drugs_done(narcos_delivered: list[Narcotic], citizen_id:int):
             if in_table == 1: # Proceed with consumption
                 connection.execute(sqlalchemy.text("""UPDATE inventory SET quantity = quantity - :quant WHERE name = :drug_name and citizen_id = :cit_id;
                                                UPDATE citizens SET coolness = coolness + :cool WHERE id = :cit_id;"""),
-                                    {'cit_id' : citizen_id, 'cool' : coolness})
+                                    {'cit_id' : citizen_id, 'cool' : coolness, 'quant' : narco.quantity})
             else:
                 return "Narco not found in inventory"
 
