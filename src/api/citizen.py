@@ -34,12 +34,12 @@ def new_user(cit: Citizen):
 
         # If the username does not exist, insert the new citizen
         if existing_citizen is None:
-            connection.execute(sqlalchemy.text(
+            id = connection.execute(sqlalchemy.text(
                 """
                 INSERT INTO citizens (name, password, role, planet) VALUES (:name, :password, :role, :planet)
                 RETURNING id
                 """
-            ), {"name": cit.username, "password": cit.password, "role": cit.role, "planet": cit.planet}).one()
+            ), {"name": cit.username, "password": cit.password, "role": cit.role, "planet": cit.planet}).scalar_one()
         else:
             return "ERROR: Username already exists. Choose a new username."
         
@@ -47,7 +47,7 @@ def new_user(cit: Citizen):
                 """
                 INSERT INTO inventory (citizen_id, quantity, type) VALUES (:citizen_id, 100, 'voidex')
                 """
-            ), {"citizen_id": cit_id})
+            ), {"citizen_id": id})
 
     return "OK: User successfully created. Log into account."
 

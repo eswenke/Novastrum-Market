@@ -4,6 +4,8 @@ from src.api import auth
 import math
 import sqlalchemy
 from src import database as db
+import src.api.citizen as citizen
+
 
 router = APIRouter(
     prefix="/inventory",
@@ -16,6 +18,10 @@ def get_inventory(citizen_id: int):
     """ 
     returns personal inventory
     """
+
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
+
     with db.engine.begin() as connection:
         num_voidex = connection.execute(
             sqlalchemy.text(
@@ -57,7 +63,7 @@ def get_inventory(citizen_id: int):
     return {"num_narcos": num_narcos, "num_substances": num_substances, "num_voidex": num_voidex}
 
 # Gets called once a day
-@router.post("/plan/{citizen_id}")
+@router.post("/promote/{citizen_id}")
 def get_promotion_plan(citizen_id: int):
     """ 
     gets civilian info, checks narco quota, and executes role promotion if above the required amount.
@@ -67,9 +73,12 @@ def get_promotion_plan(citizen_id: int):
     tier 4- govt offical (30 narcos owned)
     """
 
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
+
     promotion = 0
     with db.engine.begin() as connection:
-        num_narcos, role = connection.execute(
+        results = connection.execute(
             sqlalchemy.text(
                 """
                 SELECT COALESCE(SUM(inventory.quantity), 0) as quantity, citizens.role as role
@@ -83,8 +92,16 @@ def get_promotion_plan(citizen_id: int):
             [{"citizen_id": citizen_id}]
         ).first()
 
+        if results is None:
+            return "ERROR: not enough narcos to promote!"
+        else:
+            num_narcos, role = results
+
+        if role == 'govt':
+            return "Already a government official, the highest ranking citizen."
+
         if (role == 'civilian' and num_narcos < 5) or (role == 'miner' and num_narcos < 20) or (role == 'chemist' and num_narcos < 30):
-            role = role
+            return "ERROR: not enough narcos to promote!"
         else:
             promotion = 1
             if role == 'civilian' and num_narcos >= 5:
@@ -94,27 +111,14 @@ def get_promotion_plan(citizen_id: int):
             elif role == 'chemist' and num_narcos >= 30:
                 role = 'govt'
 
-    return {"promotion": promotion, "role": role} # || error if not enough to promote
+        connection.execute(
+            sqlalchemy.text(
+                """
+                UPDATE citizens SET role = :role
+                WHERE id = :citizen_id
+                """
+            ),
+            [{"citizen_id": citizen_id, "role": role}]
+        )
 
-class Promotion(BaseModel):
-    promotion: int
-    role: str
-
-@router.post("/deliver/{citizen_id}")
-def deliver_capacity_plan(promotion: Promotion, citizen_id: int):
-
-    if promotion:
-        with db.engine.begin() as connection:
-            connection.execute(
-                sqlalchemy.text(
-                    """
-                    UPDATE citizens SET role = :role
-                    WHERE id = :citizen_id
-                    """
-                ),
-                [{"citizen_id": citizen_id, "role": promotion.role}]
-            )
-
-    return {
-        "promoted": promotion.promotion
-    }
+    return {"promotion": promotion, "role": role}

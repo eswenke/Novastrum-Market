@@ -4,6 +4,7 @@ from src.api import auth
 from enum import Enum
 import sqlalchemy
 from src import database as db
+import src.api.citizen as citizen
 
 router = APIRouter(
     prefix="/transaction",
@@ -11,16 +12,12 @@ router = APIRouter(
     dependencies=[Depends(auth.get_api_key)],
 )
 
-class Civilian(BaseModel):
-    civilian_id: int
-    name: str
-    role: str
-    home: str
-    num_strikes: int
-
 @router.post("/")
-def start_transaction(new_cart: Civilian):
+def start_transaction():
     """init a transaction, insert to transaction table with civ id"""
+
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
 
     with db.engine.begin() as connection:
         id = connection.execute(
@@ -29,7 +26,7 @@ def start_transaction(new_cart: Civilian):
             ),
             [
                 {
-                    "civilian_id": new_cart.civilian_id
+                    "civilian_id": citizen.cit_id
                 }
             ],
         ).scalar_one()
@@ -42,6 +39,9 @@ def add_items(transaction_id: int, listing_id: int):
     """insert item into transaction_items table with product_sku"""
 
     print(f"cart: {transaction_id} listing_id: {listing_id}")
+
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
 
     with db.engine.begin() as connection:
         connection.execute(
@@ -62,6 +62,9 @@ def checkout(transaction_id: int):
     add voidex to seller_id inventory, 
     subtract product from seller inv, 
     add to buyer inv"""
+
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
     
     with db.engine.begin() as connection:
         price = connection.execute(
