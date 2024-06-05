@@ -5,8 +5,8 @@ import sqlalchemy
 from src import database as db
 
 router = APIRouter(
-    prefix="/civilian/miner",
-    tags=["miner"],
+    prefix="/civilian/chemist",
+    tags=["chemist"],
     dependencies=[Depends(auth.get_api_key)],
 )
 
@@ -24,8 +24,15 @@ def post_market_listings(narcos_delivered: list[Narcotic], citizen_id:int):
     with db.engine.begin() as connection:
         for narco in narcos_delivered: # Switch "owned" to selling, insert listing into market
             connection.execute(sqlalchemy.text("UPDATE inventory SET status = 'selling' WHERE name = :drug_name and citizen_id = :cit_id"),
-                                    {'name' : narco[0], 'cit_id' : citizen_id})
-
+                                    {'drug_name' : narco.name, 'cit_id' : citizen_id})
+            
+            price = narco.quantity * narco.price
+            
+            connection.execute(sqlalchemy.text(
+                """
+                    INSERT INTO market (name, type, price, quantity, seller_id)
+                    VALUES (:name, 'narcos', :price, :quantity, :cit_id)                           
+                """),[{'name' : narco.name, 'price': price,  'quantity': narco.quantity, 'cit_id' : citizen_id}])
 
     print(f"narcos delievered: {narcos_delivered}")
     return "OK"
@@ -51,18 +58,18 @@ def create_chemist_plan(citizen_id: int):
             if subst[1] > 10: # can make
                 drug_quant = subst[1] // 10
                 subst_lost = drug_quant * 10
-                drug_name, drug_price = connection.execute(sqlalchemy.text("SELECT name, price FROM narcos where rarity = :rare"), {'rare' : rarity}).scalar()
+                drug_name, drug_price = connection.execute(sqlalchemy.text("SELECT name, price FROM narcos where rarity = :rare"), {'rare' : rarity}).first()
                 ret.append({
                     "name": drug_name,
                     "quantity": drug_quant,
                     "price": drug_price})
                 # Update substance stores, increase drug stores
                 connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity - :subst_lost WHERE name = :subst_name and citizen_id = :cit_id"),
-                                    {'subst_lost' : subst_lost, 'name' : subst[0], 'cit_id' : citizen_id})
+                                    {'subst_lost' : subst_lost, 'subst_name' : subst[0], 'cit_id' : citizen_id})
                 # If drug already in inventory, update, else insert new row
                 if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'owned'"), {'name' : drug_name}).scalar():
                     connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity + :drug_gain WHERE name = :drug_name and citizen_id = :cit_id"),
-                                    {'drug_gain' : drug_quant, 'name' : drug_name, 'cit_id' : citizen_id})
+                                    {'drug_gain' : drug_quant, 'drug_name' : drug_name, 'cit_id' : citizen_id})
                 else:
                     connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) VALUES (:cit_id, 'narcos', :quant, :name, 'owned')"""),
                                     {'cit_id' : citizen_id, 'quant' : drug_quant, 'name' : drug_name})
