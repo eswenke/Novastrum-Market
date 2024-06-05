@@ -18,21 +18,60 @@ class War(BaseModel):
     planet_2: str
     bid: int
 
-@router.post("/plan_and_deliver/{citizen_id}")
-def plan_and_commence_wars(citizen_id: int):
+@router.post("/deliver/{citizen_id}")
+def commence_wars(wars_commenced: list[War], citizen_id: int):
+    """updates planet status to waring, post wars to gamble on to market
+       * [seller_id, type = war, name, quantity??, bid] """
+    with db.engine.begin() as connection:
+        print(f"wars commenced: {wars_commenced}")
+        for war in wars_commenced:
+            # place new war into war table with conflict handling
+            connection.execute(sqlalchemy.text(
+                """
+                INSERT INTO wars (id, planet_1, planet_2)
+                VALUES (:id, :planet_1, :planet_2)
+                ON CONFLICT (id) DO NOTHING
+                """
+            ), {'id': war.war_id , 'planet_1': war.planet_1, 'planet_2': war.planet_2})
+
+            # status of planets updated to waring
+            connection.execute(sqlalchemy.text(
+                """
+                UPDATE planets
+                SET war_id = :war_id
+                WHERE planet IN (:planet_1, :planet_2)
+                """
+            ), {'war_id': war.war_id, 'planet_1': war.planet_1, 'planet_2': war.planet_2})
+
+            # post new war to market
+            connection.execute(sqlalchemy.text(
+                """
+                INSERT INTO market (seller_id, type, name, quantity, price)
+                VALUES (:seller_id, :type, :name, :quantity, :price)
+                """
+            ), {'seller_id': citizen_id, 'type': 'wars', 'name': str(war.war_id), 'quantity': 1, 'price': war.bid})
+
+    return "OK"
+
+
+@router.post("/plan")
+def get_war_plan():
+    """
+    gets planet status, randomly pairs up planets for wars 
+    """
 
     with db.engine.begin() as connection:
-        # Step 1: Plan the wars
         result = connection.execute(sqlalchemy.text("SELECT planet FROM planets WHERE war_id = 1"))
         planets = [row[0] for row in result]  # Accessing the first element of the tuple
-
+        
         if len(planets) < 2:
             return []
 
         random.shuffle(planets)
-        war_plans = []
-        war_id = connection.execute(sqlalchemy.text("SELECT id FROM wars ORDER BY id DESC LIMIT 1")).scalar_one() or 0
+        war_plans = []  
+        war_id = connection.execute(sqlalchemy.text("SELECT id FROM wars ORDER BY id DESC LIMIT 1")).scalar_one()
         initial_bid = 100  # generate dynamically??
+
 
         for i in range(0, len(planets) - 1, 2):
             war_id += 1
@@ -45,35 +84,7 @@ def plan_and_commence_wars(citizen_id: int):
                 "bid": initial_bid
             })
 
-        # Step 2: Commence the wars
-        for war in war_plans:
-            # place new war into war table with conflict handling
-            connection.execute(sqlalchemy.text(
-                """
-                INSERT INTO wars (id, planet_1, planet_2)
-                VALUES (:id, :planet_1, :planet_2)
-                ON CONFLICT (id) DO NOTHING
-                """
-            ), {'id': war['war_id'], 'planet_1': war['planet_1'], 'planet_2': war['planet_2']})
-
-            # status of planets updated to warring
-            connection.execute(sqlalchemy.text(
-                """
-                UPDATE planets
-                SET war_id = :war_id
-                WHERE planet IN (:planet_1, :planet_2)
-                """
-            ), {'war_id': war['war_id'], 'planet_1': war['planet_1'], 'planet_2': war['planet_2']})
-
-            # post new war to market
-            connection.execute(sqlalchemy.text(
-                """
-                INSERT INTO market (seller_id, type, name, quantity, price)
-                VALUES (:seller_id, :type, :name, :quantity, :price)
-                """
-            ), {'seller_id': citizen_id, 'type': 'wars', 'name': str(war['war_id']), 'quantity': 1, 'price': war['bid']})
-
-    return war_plans
+        return war_plans
 
 if __name__ == "__main__":
-    print(plan_and_commence_wars(1))
+    print(get_war_plan())
