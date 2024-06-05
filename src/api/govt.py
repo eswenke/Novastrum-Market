@@ -60,7 +60,7 @@ def get_war_plan():
             return []
 
         random.shuffle(planets)
-        war_plans = []
+        war_plans = []  
         war_id = connection.execute(sqlalchemy.text("SELECT id FROM wars ORDER BY id DESC LIMIT 1")).scalar_one()
         initial_bid = 100  # generate dynamically??
 
