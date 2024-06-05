@@ -44,6 +44,20 @@ def add_items(transaction_id: int, listing_id: int):
         return "ERROR: not logged in."
 
     with db.engine.begin() as connection:
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                select *
+                from market
+                where id = :id
+                """
+            ),
+            [{"id": listing_id}]
+        ).fetchone()
+
+        if result is None:
+            return "ERROR: Listing does not exist on the market."
+
         connection.execute(
             sqlalchemy.text(
                 """
