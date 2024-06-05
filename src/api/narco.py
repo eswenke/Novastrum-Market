@@ -16,7 +16,7 @@ class Narcotic(BaseModel):
     # price: int
     # type: list[int]
     
-@router.post("/deliver/{citizen_id}")
+@router.post("/consume/{citizen_id}")
 def post_drugs_done(narcos_delivered: list[Narcotic], citizen_id:int):
     "Remove drugs from inventory, up coolness"
 
