@@ -27,6 +27,7 @@ def brew():
     
     if citizen.role != "chemist":
         return "Not authorized. You must be a chemist to access this service."
+
     
     with db.engine.begin() as connection:
         subst_avail = connection.execute(sqlalchemy.text("SELECT name, quantity FROM inventory where type = 'substances' and citizen_id = :id"), {'id' : citizen.cit_id})
