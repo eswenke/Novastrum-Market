@@ -42,8 +42,14 @@ def new_user(cit: Citizen):
             ), {"name": cit.username, "password": cit.password, "role": cit.role, "planet": cit.planet}).one()
         else:
             return "ERROR: Username already exists. Choose a new username."
+        
+        connection.execute(sqlalchemy.text(
+                """
+                INSERT INTO inventory (citizen_id, quantity, type) VALUES (:citizen_id, 100, 'voidex')
+                """
+            ), {"citizen_id": cit_id})
 
-    return "OK: User successfully created. Log into account"
+    return "OK: User successfully created. Log into account."
 
 @router.post("/login")
 def login(username: str, password: str):
