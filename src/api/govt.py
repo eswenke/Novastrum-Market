@@ -41,6 +41,8 @@ def commence_wars():
         war_id = connection.execute(sqlalchemy.text("SELECT id FROM wars ORDER BY id DESC LIMIT 1")).scalar_one()
         initial_bid = random.randint(25,100)  # generate dynamically??
 
+        wars_info = []
+        
         for i in range(0, len(planets) - 1, 2):
             war_id += 1
             planet_1 = planets[i]
@@ -62,7 +64,8 @@ def commence_wars():
                 WHERE planet IN (:planet_1, :planet_2)
                 """
             ), {'war_id': war_id, 'planet_1': planet_1, 'planet_2': planet_2})
-    return "OK"
+            wars_info.append(f"{planet_1} at war with {planet_2}, minimum bid: {initial_bid}")
+    return wars_info
 
 if __name__ == "__main__":
     print(commence_wars())
