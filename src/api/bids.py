@@ -22,6 +22,15 @@ def make_bid(war_id: int, bid: int, planet: str):
         return "ERROR: Not logged in."
 
     with db.engine.begin() as connection:
+        existing_citizen = connection.execute(sqlalchemy.text(
+            """
+            SELECT citizen_id FROM bids WHERE citizen_id = :cit_id and war_id = :war_id
+            """
+        ), [{"cit_id": citizen.cit_id, "war_id": war_id}]).fetchone()
+    
+        if existing_citizen is not None:
+            return "ERROR: already bid on this war"
+
         min_bid = connection.execute(
             sqlalchemy.text(
                 """ 
@@ -30,7 +39,7 @@ def make_bid(war_id: int, bid: int, planet: str):
                 where id = :war_id
                 """
             ), [{"war_id": str(war_id)}]
-        ).scalar_one
+        ).scalar_one()
 
         print(f"war bid on: {war_id}")
 
@@ -60,7 +69,7 @@ def make_bid(war_id: int, bid: int, planet: str):
 
 
 @router.post("/end/{war_id}")
-def end_bidding(war: War):
+def end_bidding(war_id: int):
     """ end the war and awards all winning bids """
 
     if citizen.cit_id < 0:
@@ -69,23 +78,26 @@ def end_bidding(war: War):
     if citizen.role != 'govt':
         return "ERROR: only government official's have access to this role."
 
-    winner = random.random()
+    winner = random.randint(0, 1)
 
     with db.engine.begin() as connection:
-        print(f"war ended: {war.war_id}")
+        print(f"war ended: {war_id}")
 
-        # get the winning planet
-        winning_planet = connection.execute(
+        # get the planets
+        results = connection.execute(
             sqlalchemy.text(
                 """ 
                 select
-                    (case when :winner = 0 then planet_1
-                    else planet_2 end)
+                    planet_1,
+                    planet_2
                 from wars
                 where id = :war_id
                 """
-            ), [{"winner": winner, "war_id": war.war_id}]
-        ).first()[0]
+            ), [{"war_id": war_id}]
+        ).first()
+
+        # assign the winner
+        winning_planet = results[0] if winner == 0 else results[1]
 
         # update govt official's gold with the loss from the bid
         connection.execute(
@@ -102,7 +114,7 @@ def end_bidding(war: War):
                 set quantity = quantity + (select loss from govt)
                 where citizen_id = (select citizen_id from wars where id = :war_id)
                 """
-            ), [{"war_id": war.war_id, "planet": winning_planet}]
+            ), [{"war_id": war_id, "planet": winning_planet}]
         )
 
         # update all winner's gold
@@ -121,7 +133,29 @@ def end_bidding(war: War):
                 from cit_bids
                 where cit_bids.id = inventory.citizen_id
                 """
-            ), [{"war_id": war.war_id, "planet": winning_planet}]
+            ), [{"war_id": war_id, "planet": winning_planet}]
+        )
+
+        # update the planet's war status
+        connection.execute(
+            sqlalchemy.text(
+                """
+                UPDATE planets SET war_id = 1
+                WHERE planet in (:planet_1, :planet_2)
+                """
+            ), 
+            [{"planet_1": results[0], "planet_2": results[1]}]
+        )
+
+        # delete bids
+        connection.execute(
+            sqlalchemy.text(
+                """
+                DELETE FROM bids
+                WHERE war_id = :war_id
+                """
+            ), 
+            [{"war_id": war_id}]
         )
 
         # delete listing
@@ -132,11 +166,10 @@ def end_bidding(war: War):
                 WHERE id = :war_id
                 """
             ), 
-            [{"war_id": str(war.war_id)}]
+            [{"war_id": war_id}]
         )
 
-
-    return
+    return "War ended! Winner: " + winning_planet + "!"
 
 @router.post("/get_wars")
 def get_wars():

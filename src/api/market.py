@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from src.api import auth
 import sqlalchemy
 from src import database as db
+import src.api.citizen as citizen
+
 
 router = APIRouter(
     prefix="/market_listings",
@@ -14,6 +16,9 @@ def get_market_listings():
     """
     returns all listings on the market. 
     """
+
+    if citizen.cit_id < 0:
+        return "ERROR: not logged in."
 
     listings = []
 
