@@ -27,7 +27,7 @@ def post_drugs_done(narcos_delivered: list[Narcotic], citizen_id:int):
                                                           WHERE citizen_id = :cit_id
                                                           AND name = :narco_name
                                                           AND quantity > 0);"""),
-                                    {'narco_name' : narco.name, 'cit_id' : citizen_id})
+                                    {'narco_name' : narco.name, 'cit_id' : citizen_id}).scalar()
             # Determining coolness, quantity * rarity
             coolness = narco.quantity * connection.execute(sqlalchemy.text("""SELECT COALESCE((
                                                                      SELECT rarity FROM narcos 
