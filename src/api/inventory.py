@@ -121,4 +121,4 @@ def get_promotion_plan(citizen_id: int):
             [{"citizen_id": citizen_id, "role": role}]
         )
 
-    return {"promotion": promotion, "role": role}
+    return f"Successfully promoted to: {role}"

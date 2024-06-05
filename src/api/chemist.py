@@ -74,4 +74,5 @@ def brew():
                 """),[{'name' : narco.name, 'price': price,  'quantity': narco.quantity, 'cit_id': citizen.cit_id}])
 
     print(f"narcos delievered: {narcos_delivered}")
-    return "OK"
+
+    return f"Narcos delievered: {narcos_delivered}"
