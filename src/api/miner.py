@@ -28,7 +28,8 @@ def mine_substance():
 
     with db.engine.begin() as connection:
         # get substance by citizen role
-        subst_data = connection.execute(sqlalchemy.text("""SELECT substances.name, substances.planet, substances.quantity, substances.price from substances JOIN citizens ON substances.planet = citizens.planet WHERE citizens.id = :id""")
+        subst_data = connection.execute(sqlalchemy.text("""SELECT substances.name, substances.planet, substances.quantity, substances.price from substances 
+                                                        JOIN citizens ON substances.planet = citizens.planet WHERE citizens.id = :id""")
                                                         , [{"id": citizen.cit_id}]).first()
         
         cap_mining = round(subst_data[2] * 0.25) # can at most mine 1/4 of the planet
@@ -62,7 +63,8 @@ def mine_substance():
                 "price": subst_data[3]
             })
         
-    return "OK"
+    return f"OK: {{'name': '{subst_data[0]}', 'planet': '{subst_data[1]}', 'quantity': {mining_amt}, 'price': '{subst_data[3]}'}}"
+
     
 
 
