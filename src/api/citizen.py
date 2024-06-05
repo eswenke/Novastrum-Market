@@ -34,12 +34,12 @@ def new_user(cit: Citizen):
 
         # If the username does not exist, insert the new citizen
         if existing_citizen is None:
-            id = connection.execute(sqlalchemy.text(
+            cit_id = connection.execute(sqlalchemy.text(
                 """
                 INSERT INTO citizens (name, password, role, planet) VALUES (:name, :password, :role, :planet)
                 RETURNING id
                 """
-            ), {"name": cit.username, "password": cit.password, "role": cit.role, "planet": cit.planet}).scalar_one()
+            ), {"name": cit.username, "password": cit.password, "role": cit.role, "planet": cit.planet}).scalar()
         else:
             return "ERROR: Username already exists. Choose a new username."
         
@@ -78,7 +78,7 @@ def login(username: str, password: str):
             """
             ), [{"name": username, "password": password}]).scalar()
     print(cit_id)
-    return "OK: Successfully logged in"
+    return f"OK: Successfully logged in. Welcome to the NovaStrum Market, {username}!"
 
 @router.post("/logout")
 def logout():
