@@ -52,19 +52,19 @@ def brew():
                                     {'subst_lost' : subst_lost, 'subst_name' : subst[0], 'cit_id' : citizen.cit_id})
                 
                 # If drug already in inventory, update, else insert new row
-                if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'owned'"), {'name' : drug_name}).scalar():
+                if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling'"), {'name' : drug_name}).scalar():
                     connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity + :drug_gain WHERE name = :drug_name and citizen_id = :cit_id"),
                                     {'drug_gain' : drug_quant, 'drug_name' : drug_name, 'cit_id' : citizen.cit_id})
                 
                 else:
-                    connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) VALUES (:cit_id, 'narcos', :quant, :name, 'owned')"""),
+                    connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) VALUES (:cit_id, 'narcos', :quant, :name, 'selling')"""),
                                     {'cit_id' : citizen.cit_id, 'quant' : drug_quant, 'name' : drug_name})
 
         print(narcos_delivered)
 
         for narco in narcos_delivered: # Switch "owned" to selling, insert listing into market
-            connection.execute(sqlalchemy.text("UPDATE inventory SET status = 'selling' WHERE name = :drug_name and citizen_id = :cit_id"),
-                                    {'drug_name' : narco.name, 'cit_id' : citizen.cit_id})
+            # connection.execute(sqlalchemy.text("UPDATE inventory SET status = 'selling' WHERE name = :drug_name and citizen_id = :cit_id"),
+            #                         {'drug_name' : narco.name, 'cit_id' : citizen.cit_id})
             
             price = narco.quantity * narco.price
             
