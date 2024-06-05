@@ -31,7 +31,7 @@ def commence_wars():
     gets planet status, randomly pairs up planets for wars 
     """
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT planet FROM planets WHERE war_id = 5"))
+        result = connection.execute(sqlalchemy.text("SELECT planet FROM planets WHERE war_id = 1"))
         planets = [row[0] for row in result]  # Accessing the first element of the tuple
         
         if len(planets) < 2:
