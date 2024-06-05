@@ -18,7 +18,7 @@ class Narcotic(BaseModel):
     
 @router.post("/consume/{citizen_id}")
 def post_drugs_done(narcos_delivered: list[Narcotic], citizen_id:int):
-    "Remove drugs from inventory, up coolness"
+    "Remove drugs from inventory, be cooler"
 
     with db.engine.begin() as connection:
         for narco in narcos_delivered: # Switch decrement number owned, increment coolness, dont if drug not owned
@@ -27,13 +27,13 @@ def post_drugs_done(narcos_delivered: list[Narcotic], citizen_id:int):
                                                           WHERE citizen_id = :cit_id
                                                           AND name = :narco_name
                                                           AND quantity > 0);"""),
-                                    {'narco_name' : narco[0], 'cit_id' : citizen_id})
+                                    {'narco_name' : narco.name, 'cit_id' : citizen_id})
             # Determining coolness, quantity * rarity
-            coolness = narco[1] * connection.execute(sqlalchemy.text("""SELECT COALESCE((
+            coolness = narco.quantity * connection.execute(sqlalchemy.text("""SELECT COALESCE((
                                                                      SELECT rarity FROM narcos 
                                                                      WHERE name = :drug_name 
                                                                      LIMIT 1), -1) as result;"""), 
-                                                    {'drug_name' : narco[0]}).scalar()
+                                                    {'drug_name' : narco.name}).scalar()
             
             if coolness < 0:
                 return "Unidentified narcotic or impossible quantity"
