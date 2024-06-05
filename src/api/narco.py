@@ -26,7 +26,8 @@ def post_drugs_done(narcos_delivered: list[Narcotic], citizen_id:int):
                                                           SELECT 1 FROM inventory 
                                                           WHERE citizen_id = :cit_id
                                                           AND name = :narco_name
-                                                          AND quantity > 0);"""),
+                                                          AND quantity > 0
+                                                          AND (quantity - quant) >= 0);"""),
                                     {'narco_name' : narco.name, 'cit_id' : citizen_id}).scalar()
             # Determining coolness, quantity * rarity
             coolness = narco.quantity * connection.execute(sqlalchemy.text("""SELECT COALESCE((
@@ -42,7 +43,7 @@ def post_drugs_done(narcos_delivered: list[Narcotic], citizen_id:int):
                                                UPDATE citizens SET coolness = coolness + :cool WHERE id = :cit_id;"""),
                                     {'cit_id' : citizen_id, 'cool' : coolness, 'quant' : narco.quantity, 'drug_name' : narco.name})
             else:
-                return "Narco not found in inventory"
+                return "Narco not found in inventory or not enough narcos"
 
     print(f"narcos consumed: {narcos_delivered}")
     return "OK"
