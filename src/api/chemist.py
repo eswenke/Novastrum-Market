@@ -19,8 +19,7 @@ class Narcotic(BaseModel):
     
 @router.post("/brew")
 def brew():
-    """insert narcos to market listings table,
-    * [seller_id, type = narco, prod_sku, quant, price]"""
+    """insert narcos to market listings table and update chemist inventory"""
 
     if citizen.cit_id < 0:
         return "ERROR: Not logged in."
@@ -52,7 +51,7 @@ def brew():
                                     {'subst_lost' : subst_lost, 'subst_name' : subst[0], 'cit_id' : citizen.cit_id})
                 
                 # If drug already in inventory, update, else insert new row
-                if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling'"), {'name' : drug_name}).scalar():
+                if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling' and citizen_id = :cit_id"), {'name' : drug_name, 'cit_id' : citizen.cit_id}).scalar():
                     connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity + :drug_gain WHERE name = :drug_name and citizen_id = :cit_id"),
                                     {'drug_gain' : drug_quant, 'drug_name' : drug_name, 'cit_id' : citizen.cit_id})
                 
@@ -61,6 +60,8 @@ def brew():
                                     {'cit_id' : citizen.cit_id, 'quant' : drug_quant, 'name' : drug_name})
 
         print(narcos_delivered)
+        if len(narcos_delivered) == 0:
+            return "Cannot create narcotics: No substances in inventory!"
 
         for narco in narcos_delivered: # Switch "owned" to selling, insert listing into market
             # connection.execute(sqlalchemy.text("UPDATE inventory SET status = 'selling' WHERE name = :drug_name and citizen_id = :cit_id"),

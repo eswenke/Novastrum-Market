@@ -73,10 +73,10 @@ def end_bidding(war_id: int):
     """ end the war and awards all winning bids """
 
     if citizen.cit_id < 0:
-        return "ERROR: not logged in."
+        return "ERROR: Not logged in."
     
     if citizen.role != 'govt':
-        return "ERROR: only government official's have access to this role."
+        return "ERROR: Only government officials have access to this role."
 
     winner = random.randint(0, 1)
 
@@ -190,6 +190,9 @@ def get_wars():
         wars = []
         
         for row in result:
+            if len(result) == 1 and row.planet_1 == "peace":
+                return "No wars are currently active!"
+
             print(row)
             id, planet_1, planet_2, citizen_id, min_bid = row
             wars.append({

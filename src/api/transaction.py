@@ -81,7 +81,7 @@ def checkout(transaction_id: int):
         return "ERROR: not logged in."
     
     with db.engine.begin() as connection:
-        price = connection.execute(
+        p_res = connection.execute(
             sqlalchemy.text(
                 """
                 WITH target AS (
@@ -110,7 +110,12 @@ def checkout(transaction_id: int):
                 """
             ),
             [{"transaction_id": transaction_id}]
-        ).scalar_one()
+        ).scalar()
+
+        if p_res is None:
+            return "ERROR: Checkout could not be completed, transaction already finished."
+        
+        price = p_res
 
         connection.execute(
             sqlalchemy.text(

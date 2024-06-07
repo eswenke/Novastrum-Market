@@ -13,8 +13,8 @@ router = APIRouter(
     dependencies=[Depends(auth.get_api_key)],
 )
 
-@router.get("/audit/{citizen_id}")
-def get_inventory(citizen_id: int):
+@router.get("/audit")
+def get_inventory():
     """ 
     returns personal inventory
     """
@@ -32,7 +32,7 @@ def get_inventory(citizen_id: int):
                 AND type = 'voidex';
                 """
             ),
-            [{"citizen_id": citizen_id}]
+            [{"citizen_id": citizen.cit_id}]
         ).scalar_one()
 
         num_narcos = connection.execute(
@@ -44,7 +44,7 @@ def get_inventory(citizen_id: int):
                 AND type = 'narcos';
                 """
             ),
-            [{"citizen_id": citizen_id}]
+            [{"citizen_id": citizen.cit_id}]
         ).scalar_one()
 
         num_substances = connection.execute(
@@ -56,15 +56,15 @@ def get_inventory(citizen_id: int):
                 AND type = 'substances';
                 """
             ),
-            [{"citizen_id": citizen_id}]
+            [{"citizen_id": citizen.cit_id}]
         ).scalar_one()
 
     
     return {"num_narcos": num_narcos, "num_substances": num_substances, "num_voidex": num_voidex}
 
 # Gets called once a day
-@router.post("/promote/{citizen_id}")
-def get_promotion_plan(citizen_id: int):
+@router.post("/promote")
+def get_promotion_plan():
     """ 
     gets civilian info, checks narco quota, and executes role promotion if above the required amount.
     tier 1- civilians
@@ -76,7 +76,6 @@ def get_promotion_plan(citizen_id: int):
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
 
-    promotion = 0
     with db.engine.begin() as connection:
         results = connection.execute(
             sqlalchemy.text(
@@ -89,7 +88,7 @@ def get_promotion_plan(citizen_id: int):
                 GROUP BY role
                 """
             ),
-            [{"citizen_id": citizen_id}]
+            [{"citizen_id": citizen.cit_id}]
         ).first()
 
         if results is None:
@@ -103,7 +102,6 @@ def get_promotion_plan(citizen_id: int):
         if (role == 'civilian' and num_narcos < 5) or (role == 'miner' and num_narcos < 20) or (role == 'chemist' and num_narcos < 30):
             return "ERROR: not enough narcos to promote!"
         else:
-            promotion = 1
             if role == 'civilian' and num_narcos >= 5:
                 role = 'miner'
             elif role == 'miner' and num_narcos >= 20:
@@ -118,7 +116,7 @@ def get_promotion_plan(citizen_id: int):
                 WHERE id = :citizen_id
                 """
             ),
-            [{"citizen_id": citizen_id, "role": role}]
+            [{"citizen_id": citizen.cit_id, "role": role}]
         )
 
     return f"Successfully promoted to: {role}"
