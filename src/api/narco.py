@@ -53,4 +53,4 @@ def post_drugs_done(narcos_delivered: list[Narcotic]):
 
     print(f"narcos consumed: {narcos_delivered}")
     
-    return f"Narcos consumed: {narcos_delivered}"
+    return f"narcos consumed: {narcos_delivered}"

@@ -33,10 +33,11 @@ def mine_substance():
                                                         , [{"id": citizen.cit_id}]).first()
         
         cap_mining = round(subst_data[2] * 0.25) # can at most mine 1/4 of the planet
-        if cap_mining == 0: return {} # planet substance depleted, maybe we add substance after certain time
-        mining_amt = random.randint(0, cap_mining)
+        if cap_mining == 0: 
+            return "This planet has been drained of substances. Reset the planet in order to continue mining."
+        mining_amt = random.randint(1, cap_mining)
    
-    #Substance(substances[0], substances[2], mining_amt, substances[1])
+        #Substance(substances[0], substances[2], mining_amt, substances[1])
         # add substance to market
         connection.execute(sqlalchemy.text(
                         """
@@ -46,8 +47,13 @@ def mine_substance():
                         ), {"quantity": mining_amt, "price": subst_data[3], 
                             "id": citizen.cit_id, "name":subst_data[0]})
         
-        # update inventory 
-        connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) 
+        # update inventory if it already exist, otherwise insert into inventory
+        if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling' and citizen_id = :cit_id"), {'name' : subst_data[0], 'cit_id' : citizen.cit_id}).scalar():
+            connection.execute(sqlalchemy.text("""UPDATE inventory SET quantity = quantity + :mined
+                                            WHERE name = :name and citizen_id = :cit_id"""),
+                                        {'mined' : mining_amt, 'name' : subst_data[0], 'cit_id': citizen.cit_id})
+        else:
+            connection.execute(sqlalchemy.text("""INSERT INTO inventory (citizen_id, type, quantity, name, status) 
                                                 VALUES (:id, 'substances', :quant, :name, 'selling')"""),
                                         {'id' : citizen.cit_id, 'quant' : mining_amt, 'name' : subst_data[0]})
             
