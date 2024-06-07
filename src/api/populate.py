@@ -186,3 +186,4 @@ with engine.begin() as conn:
     print("total listings: ", total_listings)
     print("total inventory: ", total_inventory)
     print("total bids: ", total_bids)
+    print("total rows added: ", total_inventory + total_bids + total_listings + num_citizens)
