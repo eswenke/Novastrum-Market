@@ -16,4 +16,4 @@
   * Dirty reads: In checkout, if the inventory or market table that another transaction has written but not committed.
   * Phantom Reads: In checkout, when reading items from the market and the inventory, another transaction could delete rows on the market table, or add to the inventory rows – leading to different results if the transaction re-reads. 
 
-[**view concurrency.jpg to see diagrams!**](https://github.com/eswenke/Novastrum-Market/blob/7018a89bee98ffc0ea027df7ca3d13ec627cb00a/docs/Concurrency.pdf)
+[**view diagrams!**](https://github.com/eswenke/Novastrum-Market/blob/7018a89bee98ffc0ea027df7ca3d13ec627cb00a/docs/Concurrency.pdf)
