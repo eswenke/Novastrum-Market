@@ -128,7 +128,7 @@ Create a transaction.
 
 
 ### Mine `/civilian/mine` (POST)
-### [COMPLEX ENDPOINT 1](../src/api/bids.py)
+### [COMPLEX ENDPOINT 1](../src/api/miner.py)
 
 **Response**:
 
@@ -156,7 +156,7 @@ Create a transaction.
 
 
 ### End War - `/bids/end/{war_id}` (POST)
-### [COMPLEX ENDPOINT 2](../src/api/miner.py)
+### [COMPLEX ENDPOINT 2](../src/api/bids.py)
 
 **Response**:
 
