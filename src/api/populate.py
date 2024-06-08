@@ -177,7 +177,6 @@ with engine.begin() as conn:
 
 num_citizens = 160000
 fake = Faker()
-posts_sample_distribution = np.random.default_rng().negative_binomial(0.04, 0.01, num_citizens)
 narcos_sample_distribution = np.random.choice([0, 1, 2, 3, 4, 5],
                                                  num_citizens,
                                                 p=[0.15, 0.2, 0.1, 0.3, 0.1, 0.15])

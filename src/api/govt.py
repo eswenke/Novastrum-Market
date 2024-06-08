@@ -6,6 +6,7 @@ import sqlalchemy
 from src import database as db
 import src.api.citizen as citizen
 import random
+import time
 
 router = APIRouter(
     prefix="/citizen",
@@ -21,6 +22,10 @@ class War(BaseModel):
 
 @router.post("/begin/wars")
 def commence_wars():
+    """create a war that can be bid on"""
+
+    begin = time.time() 
+
     if citizen.cit_id < 0:
         return "ERROR: Not logged in."
     
@@ -65,6 +70,10 @@ def commence_wars():
                 """
             ), {'war_id': war_id, 'planet_1': planet_1, 'planet_2': planet_2})
             wars_info.append(f"{planet_1} at war with {planet_2}, minimum bid: {initial_bid}")
+
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms") 
+
     return wars_info
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ import math
 import sqlalchemy
 from src import database as db
 import src.api.citizen as citizen
+import time
 
 
 router = APIRouter(
@@ -18,6 +19,7 @@ def get_inventory():
     """ 
     returns personal inventory
     """
+    begin = time.time()
 
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
@@ -59,7 +61,9 @@ def get_inventory():
             [{"citizen_id": citizen.cit_id}]
         ).scalar_one()
 
-    
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms") 
+
     return {"num_narcos": num_narcos, "num_substances": num_substances, "num_voidex": num_voidex}
 
 # Gets called once a day
@@ -72,6 +76,8 @@ def get_promotion_plan():
     tier 3- chemist (20 narcos owned)
     tier 4- govt offical (30 narcos owned)
     """
+
+    begin = time.time() 
 
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
@@ -118,5 +124,8 @@ def get_promotion_plan():
             ),
             [{"citizen_id": citizen.cit_id, "role": role}]
         )
+
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms") 
 
     return f"Successfully promoted to: {role}"

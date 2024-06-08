@@ -5,6 +5,7 @@ from enum import Enum
 import sqlalchemy
 from src import database as db
 import src.api.citizen as citizen
+import time
 
 router = APIRouter(
     prefix="/transaction",
@@ -15,6 +16,8 @@ router = APIRouter(
 @router.post("/")
 def start_transaction():
     """init a transaction, insert to transaction table with civ id"""
+
+    begin = time.time()
 
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
@@ -31,12 +34,17 @@ def start_transaction():
             ],
         ).scalar_one()
 
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")  
+
     return {"transaction_id": id}
 
 
 @router.post("/items/{transaction_id}/{listing_id}")
 def add_items(transaction_id: int, listing_id: int):
     """insert item into transaction_items table with product_sku"""
+
+    begin = time.time()
 
     print(f"cart: {transaction_id} listing_id: {listing_id}")
 
@@ -67,6 +75,9 @@ def add_items(transaction_id: int, listing_id: int):
             [{"transaction_id": transaction_id, "listing_id": listing_id}],
         )
 
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")  
+
     return "OK"
 
 
@@ -76,6 +87,8 @@ def checkout(transaction_id: int):
     add voidex to seller_id inventory, 
     subtract product from seller inv, 
     add to buyer inv"""
+
+    begin = time.time()
 
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
@@ -179,5 +192,8 @@ def checkout(transaction_id: int):
             ), 
             [{"transaction_id": transaction_id}]
         ).scalar_one()
+    
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")  
 
     return {"quantity": quantity, "voidex_paid": price}

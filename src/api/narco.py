@@ -4,6 +4,7 @@ from src.api import auth
 import sqlalchemy
 from src import database as db
 import src.api.citizen as citizen
+import time
 
 router = APIRouter(
     prefix="/narco",
@@ -19,6 +20,8 @@ class Narcotic(BaseModel):
 @router.post("/consume")
 def post_drugs_done(narcos_delivered: list[Narcotic]):
     "Remove drugs from inventory, be cooler"
+
+    begin = time.time()
 
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
@@ -53,4 +56,7 @@ def post_drugs_done(narcos_delivered: list[Narcotic]):
 
     print(f"narcos consumed: {narcos_delivered}")
     
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")  
+
     return f"narcos consumed: {narcos_delivered}"

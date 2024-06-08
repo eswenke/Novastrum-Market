@@ -5,6 +5,7 @@ from src import database as db
 import sqlalchemy
 import random
 import src.api.citizen as citizen
+import time
 
 router = APIRouter(
     prefix="/citizen",
@@ -20,6 +21,10 @@ class Substance(BaseModel):
 
 @router.post("/mine")
 def mine_substance():
+    """mine substances from planet, post to market"""
+
+    begin = time.time() 
+
     if citizen.cit_id < 0:
         return "ERROR: Not logged in."
     
@@ -69,6 +74,9 @@ def mine_substance():
                 "price": subst_data[3]
             })
         
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms") 
+
     return f"OK: {{'name': '{subst_data[0]}', 'planet': '{subst_data[1]}', 'quantity': {mining_amt}, 'price': '{subst_data[3]}'}}"
 
     
