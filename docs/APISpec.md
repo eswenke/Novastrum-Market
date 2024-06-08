@@ -1,9 +1,9 @@
 ALL TIERS:
-get all market listings
-post transactions (purchase)
-get inventory
-get promoted (except govt officials, already highest rank)
-consume narcotics
+get all market listings, 
+post transactions (purchase), 
+get inventory, 
+get promoted (except govt officials, already highest rank), 
+consume narcotics, 
 post space war bets
 
 tier 1 - civilians (0 drugs)
