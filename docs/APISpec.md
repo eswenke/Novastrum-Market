@@ -1,42 +1,40 @@
-tier 1 - civilians (0 drugs)
-get list of substances on market narcotics
-post orders (purchase)
+ALL TIERS:
+get all market listings
+post transactions (purchase)
 get inventory
+get promoted (except govt officials, already highest rank)
+consume narcotics
 post space war bets
 
+tier 1 - civilians (0 drugs)
+no unique actions
+
 tier 2 - miners (5 drugs)
-get list of substances on that planet
-post substances to (materials mined on that tick)
+post substances mined to market
 
 tier 3 - chemist (20 drugs)
-get list of mined substances 
-/market_listings now reveals mineable subst
-creates narcotics
-post narcotics onto market
-NOT ALLOWED: can’t be miner
+post narcotics brewed onto market
 
 tier 4 - govt officials (30 drugs)
-post to imprison individuals
-set winners of space wars
-modify narcotics supply … etc
-NOT ALLOWED: can’t be miner, can’t be chemist …  
+create wars to bid on
+end bidding on those wars
 
 ## endpoints: 
 
-### Get Promotion Plan - `/inventory/plan` (POST)
+### Get promotion - `/inventory/promote` (POST)
 
 **Response**:
 
 ```json
 [
     {
-        "promoted": "integer"
+        "Successfully promoted to: {role}"
     }
 ]
 ```
 
 
-### Get inventory Plan - `/inventory/audit` (GET)
+### Get inventory - `/inventory/audit` (GET)
 
 **Response**:
 
@@ -51,7 +49,7 @@ NOT ALLOWED: can’t be miner, can’t be chemist …
 ```
 
 
-### Get Market Listing - `/market_listing/` (GET)
+### Get Market Listings - `/market_listings` (GET)
 
 Retrieves the a market list of items. Each unique item combination should have only a single price.
 
@@ -60,32 +58,22 @@ Retrieves the a market list of items. Each unique item combination should have o
 ```json
 [
     {
-        "seller_id" : "string",
-        "item_type" : "string",
         "name": "string",
-        "quantity": "integer", /* Between 1 and 10000 */
-        "price": "integer", /* Between 1 and 500 */
+        "type": "string",
+        "quantity": "integer",
+        "price": "integer",
+        "seller id": "integer",
+        "listing id": "integer"
     }
 ]
 ```
 
 
-### Create Transaction - `/transactions/` (POST)
+### Create Transaction - `/transactions` (POST)
 
 Create a transaction.
 
-**Request**:
-
-```json
-[
-    {
-        "civilian_id" : "integer",
-        "transaction_id" : "integer"
-    }
-]
-```
-
-**Return**:
+**Response**:
 
 ```json
 [
@@ -96,72 +84,155 @@ Create a transaction.
 ```
 
 
-### Adding Item to Transaction - `/transactions/{transaction_id}/items/{items_name}` (PUT)
+### Adding Item to Transaction - `/transactions/items/{transaction_id}/{listing_id}` (POST)
 
-**Request**:
-
-```json
-[
-    {
-        "quantity" : "integer"
-    }
-]
-```
 
 **Response**:
 
 ```json
 [
     {
-        "success" : "boolean"
+        "OK"
     }
 ]
 ```
 
 
-### Get Chemist Plan - `/civilian/chemist/plan` (POST)
+### Checkout- `/transactions/checkout/{transaction_id}` (POST)
+
 
 **Response**:
 
 ```json
 [
     {
-        "narco_type" : "integer arr",
-        "name" : "string",
-        "quantity", "integer",
-        "price", "integer"
+        "quantity": "integer",
+        "voidex_paid": "integer"
     }
 ]
 ```
 
 
-### Get Miner Plan `/civilian/miner/plan` (POST)
+### Brew - `/civilian/brew` (POST)
 
 **Response**:
 
 ```json
 [
     {
-        "name" : "string",
-        "quantity", "integer",
-        "price", "integer"
+        "Narcos delievered: {narcos_delivered}"
     }
 ]
 ```
 
 
-### Get Government Official Plan - `/civilian/govt/plan` (POST)
+### Mine `/civilian/mine` (POST)
+### [COMPLEX ENDPOINT 2](../src/api/bids.py)
 
 **Response**:
 
 ```json
 [
     {
-        "war_id" : "integer",
-        "planet_1" : "string",
-        "planet_2" : "string",
-        "initial_bid" : "integer",
-        "length_bid" : "integer",
+        "OK: {{'name': '{subst_data[0]}', 'planet': '{subst_data[1]}', 'quantity': {mining_amt}, 'price': '{subst_data[3]}'}}"
+    }
+]
+```
+
+
+### Start War - `/civilian/begin/wars` (POST)
+
+**Response**:
+
+```json
+[
+    {
+        "{planet_1} at war with {planet_2}, minimum bid: {initial_bid}",
+        ...
+    }
+]
+```
+
+
+### End War - `/bids/end/{war_id}` (POST)
+### [COMPLEX ENDPOINT 1](../src/api/miner.py)
+
+**Response**:
+
+```json
+[
+    {
+        "War ended! Winner: " + winning_planet + "!"
+    }
+]
+```
+
+
+### Get Wars - `/bids/get_wars` (GET)
+
+**Response**:
+
+```json
+[
+    {
+        "id": id,
+        "planet 1": planet_1,
+        "planet 2": planet_2,
+        "citizen id": citizen_id,
+        "min bid": min_bid
+    },
+    ...
+]
+```
+
+
+### Take Narcos - `/narcos/consume` (POST)
+
+**Response**:
+
+```json
+[
+    {
+        "narcos consumed: {narcos_delivered}"
+    }
+]
+```
+
+
+### Create Citizen - `/citizen/create` (POST)
+
+**Response**:
+
+```json
+[
+    {
+        "OK: User successfully created. Log into account."
+    }
+]
+```
+
+
+### Login - `/citizen/login` (POST)
+
+**Response**:
+
+```json
+[
+    {
+        "OK: Successfully logged in. Welcome to the NovaStrum Market, {username}!"
+    }
+]
+```
+
+
+### Logout - `/citizen/logout` (POST)
+
+**Response**:
+
+```json
+[
+    {
+        "OK: Successfully logged out."
     }
 ]
 ```
