@@ -16,7 +16,7 @@ tier 3 - chemist (20 drugs)
 post narcotics brewed onto market
 
 tier 4 - govt officials (30 drugs)
-create wars to bid on
+create wars to bid on, 
 end bidding on those wars
 
 ## endpoints: 
