@@ -211,3 +211,5 @@ more to add in terms of indexes in order to speed this up further. The type inde
 | Seq Scan on market  (cost=0.00..1515.87 rows=80187 width=39) |
 
 - This returns all listings on the market. I don't know how adding an index here would help performance. In reality, the way I would improve the speed of this endpoint would be to have some sort of page system akin to the potion shop, where only a certain amount of results are returns at one time, and you could filter by search criteria to narrow down the results even further.
+
+# [link to 1 million rows script](../src/api/populate.py)
