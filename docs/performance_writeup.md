@@ -46,7 +46,7 @@
 
 ## citizen login:
 
-| QUERY PLAN                                                                      |
+| ORIGINAL QUERY PLAN                                                             |
 | ------------------------------------------------------------------------------- |
 | Limit  (cost=0.00..4053.01 rows=1 width=4)                                      |
 |   ->  Seq Scan on citizens  (cost=0.00..4053.01 rows=1 width=4)                 |
@@ -55,7 +55,7 @@
 - I'm going to add an index on the name and password combination to try and speed up the scan.
 - CREATE INDEX name_pass_idx ON citizens (name, password);
 
-| QUERY PLAN                                                                         |
+| UPDATED QUERY PLAN                                                                 |
 | ---------------------------------------------------------------------------------- |
 | Limit  (cost=0.42..8.45 rows=1 width=4)                                            |
 |   ->  Index Scan using name_pass_idx on citizens  (cost=0.42..8.45 rows=1 width=4) |
@@ -64,7 +64,7 @@
 
 - This query significantly improved performance by around 4050 ms.
 
-| QUERY PLAN                                                                      |
+| ORIGINAL QUERY PLAN                                                             |
 | ------------------------------------------------------------------------------- |
 | Limit  (cost=0.00..4053.01 rows=1 width=7)                                      |
 |   ->  Seq Scan on citizens  (cost=0.00..4053.01 rows=1 width=7)                 |
@@ -72,7 +72,7 @@
 
 - The prior index I created will also speed up this query as well.
 
-| QUERY PLAN                                                                         |
+| UPDATED QUERY PLAN                                                                 |
 | ---------------------------------------------------------------------------------- |
 | Limit  (cost=0.42..8.45 rows=1 width=7)                                            |
 |   ->  Index Scan using name_pass_idx on citizens  (cost=0.42..8.45 rows=1 width=7) |
@@ -83,14 +83,14 @@
 
 ## end bid:
 
-| QUERY PLAN                                                            |
+| ORIGINAL QUERY PLAN                                                   |
 | --------------------------------------------------------------------- |
 | Index Scan using wars_pkey on wars  (cost=0.15..8.17 rows=1 width=64) |
 |   Index Cond: (id = 3)                                                |
 
 - No improvement needed.
 
-| QUERY PLAN                                                                            |
+| ORIGINAL QUERY PLAN                                                                   |
 | ------------------------------------------------------------------------------------- |
 | Update on inventory  (cost=11054.34..11065.47 rows=0 width=0)                         |
 |   InitPlan 1 (returns $0)                                                             |
@@ -112,7 +112,7 @@
 - CREATE INDEX inv_type_idx ON inventory (type);
 - CREATE INDEX bids_planet_war_id_idx ON bids (planet, war_id);
 
-| QUERY PLAN                                                                                            |
+| UPDATED QUERY PLAN                                                                                    |
 | ----------------------------------------------------------------------------------------------------- |
 | Update on inventory  (cost=10361.16..10372.29 rows=0 width=0)                                         |
 |   InitPlan 1 (returns $0)                                                                             |
@@ -135,7 +135,7 @@
 - There was marginal improvement in the aggregate cost by around 700 ms, but this is still incredible slow. I don't know what
 more to add in terms of indexes in order to speed this up further. The type index created the improvement, but the pair of 'planet' and 'war_id' did not change anything.
 
-| QUERY PLAN                                                                                 |
+| ORIGINAL QUERY PLAN                                                                        |
 | ------------------------------------------------------------------------------------------ |
 | Update on inventory  (cost=6895.17..17209.76 rows=0 width=0)                               |
 |   ->  Hash Join  (cost=6895.17..17209.76 rows=93403 width=22)                              |
@@ -151,7 +151,7 @@ more to add in terms of indexes in order to speed this up further. The type inde
 
 - I don't know what indexes to add here in order to speed up performance. I added the planet, war_id pairing index in the last query, so that seems to have very marginally improved the performace by around 50 ms. The query plan immediately below is the updated query after that pairing was added.
 
-| QUERY PLAN                                                                                                              |
+| UPDATED QUERY PLAN                                                                                                      |
 | ----------------------------------------------------------------------------------------------------------------------- |
 | Update on inventory  (cost=6848.32..17178.45 rows=0 width=0)                                                            |
 |   ->  Hash Join  (cost=6848.32..17178.45 rows=94398 width=22)                                                           |
@@ -167,7 +167,7 @@ more to add in terms of indexes in order to speed this up further. The type inde
 |                                 ->  Bitmap Index Scan on bids_planet_war_id_idx  (cost=0.00..544.49 rows=40020 width=0) |
 |                                       Index Cond: ((planet = 'Pyre'::text) AND (war_id = 3))                            |
 
-| QUERY PLAN                                                                      |
+| ORIGINAL QUERY PLAN                                                             |
 | ------------------------------------------------------------------------------- |
 | Update on planets  (cost=8.32..13.66 rows=0 width=0)                            |
 |   ->  Bitmap Heap Scan on planets  (cost=8.32..13.66 rows=2 width=10)           |
@@ -177,7 +177,7 @@ more to add in terms of indexes in order to speed this up further. The type inde
 
 - No improvements to be made.
 
-| QUERY PLAN                                                      |
+| ORIGINAL QUERY PLAN                                             |
 | --------------------------------------------------------------- |
 | Delete on bids  (cost=0.00..2021.38 rows=0 width=0)             |
 |   ->  Seq Scan on bids  (cost=0.00..2021.38 rows=80110 width=6) |
@@ -186,7 +186,7 @@ more to add in terms of indexes in order to speed this up further. The type inde
 - In order to speed up this endpoint, I'm going to add an index on the war id in bids to speed up the deletion
 - CREATE INDEX war_id_idx ON bids (war_id);
 
-| QUERY PLAN                                                      |
+| UPDATED QUERY PLAN                                              |
 | --------------------------------------------------------------- |
 | Delete on bids  (cost=0.00..2021.38 rows=0 width=0)             |
 |   ->  Seq Scan on bids  (cost=0.00..2021.38 rows=80110 width=6) |
@@ -194,7 +194,7 @@ more to add in terms of indexes in order to speed this up further. The type inde
 
 - This led to no improvemnet, probably because the data is too small.
 
-| QUERY PLAN                                                                 |
+| ORIGINAL QUERY PLAN                                                        |
 | -------------------------------------------------------------------------- |
 | Delete on wars  (cost=0.15..8.17 rows=0 width=0)                           |
 |   ->  Index Scan using wars_pkey on wars  (cost=0.15..8.17 rows=1 width=6) |
@@ -206,7 +206,7 @@ more to add in terms of indexes in order to speed this up further. The type inde
 
 ## market:
 
-| QUERY PLAN                                                   |
+| ORIGINAL QUERY PLAN                                          |
 | ------------------------------------------------------------ |
 | Seq Scan on market  (cost=0.00..1515.87 rows=80187 width=39) |
 
