@@ -34,7 +34,7 @@ def mine_substance():
     with db.engine.begin() as connection:
         # get substance by citizen role
         subst_data = connection.execute(sqlalchemy.text("""SELECT substances.name, substances.planet, substances.quantity, substances.price from substances 
-                                                        JOIN citizens ON substances.planet = citizens.planet WHERE citizens.id = :id""")
+                                                        JOIN citizens ON substances.planet = citizens.planet WHERE citizens.id = :id FOR UPDATE""")
                                                         , [{"id": citizen.cit_id}]).first()
         
         cap_mining = round(subst_data[2] * 0.25) # can at most mine 1/4 of the planet
@@ -53,7 +53,7 @@ def mine_substance():
                             "id": citizen.cit_id, "name":subst_data[0]})
         
         # update inventory if it already exist, otherwise insert into inventory
-        if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling' and citizen_id = :cit_id"), {'name' : subst_data[0], 'cit_id' : citizen.cit_id}).scalar():
+        if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling' and citizen_id = :cit_id FOR UPDATE"), {'name' : subst_data[0], 'cit_id' : citizen.cit_id}).scalar():
             connection.execute(sqlalchemy.text("""UPDATE inventory SET quantity = quantity + :mined
                                             WHERE name = :name and citizen_id = :cit_id"""),
                                         {'mined' : mining_amt, 'name' : subst_data[0], 'cit_id': citizen.cit_id})
