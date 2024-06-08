@@ -8,7 +8,6 @@
 * Pessimistic concurrency control: Using for update to lock rows in chemist and miner functions so other transactions can't use specific resources at the same time. 
 
 **Cases where we may encounter a phenomenon:**
-![Concurrency-1](https://github.com/eswenke/Novastrum-Market/assets/102557097/9b68ec82-985e-488b-b266-a3f0ac1abae0)
 * miner.py
   * Non-repeatable Reads: The quantity of the substance could be updated by another transaction after it is initially read, but before it is updated in the substances table || When checking if the substance already exists in the inventory, if chemist transactions occur and rows are modified from miner inventory, the set of values retrieved from miner inventory will change. 
 * _chemist.py:_
