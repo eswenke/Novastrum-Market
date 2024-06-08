@@ -51,7 +51,7 @@ def brew():
                                     {'subst_lost' : subst_lost, 'subst_name' : subst[0], 'cit_id' : citizen.cit_id})
                 
                 # If drug already in inventory, update, else insert new row
-                if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling' and citizen_id = :cit_id"), {'name' : drug_name, 'cit_id' : citizen.cit_id}).scalar():
+                if connection.execute(sqlalchemy.text("SELECT name FROM inventory where name = :name and status = 'selling' and citizen_id = :cit_id FOR UPDATE"), {'name' : drug_name, 'cit_id' : citizen.cit_id}).scalar():
                     connection.execute(sqlalchemy.text("UPDATE inventory SET quantity = quantity + :drug_gain WHERE name = :drug_name and citizen_id = :cit_id"),
                                     {'drug_gain' : drug_quant, 'drug_name' : drug_name, 'cit_id' : citizen.cit_id})
                 
