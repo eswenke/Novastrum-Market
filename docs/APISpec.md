@@ -64,7 +64,8 @@ Retrieves the a market list of items. Each unique item combination should have o
         "price": "integer",
         "seller id": "integer",
         "listing id": "integer"
-    }
+    },
+    ...
 ]
 ```
 
