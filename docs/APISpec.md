@@ -128,7 +128,7 @@ Create a transaction.
 
 
 ### Mine `/civilian/mine` (POST)
-### [COMPLEX ENDPOINT 2](../src/api/bids.py)
+### [COMPLEX ENDPOINT 1](../src/api/bids.py)
 
 **Response**:
 
@@ -156,14 +156,14 @@ Create a transaction.
 
 
 ### End War - `/bids/end/{war_id}` (POST)
-### [COMPLEX ENDPOINT 1](../src/api/miner.py)
+### [COMPLEX ENDPOINT 2](../src/api/miner.py)
 
 **Response**:
 
 ```json
 [
     {
-        "War ended! Winner: " + winning_planet + "!"
+        "War ended! Winner: {winning_planet}!"
     }
 ]
 ```
@@ -176,11 +176,11 @@ Create a transaction.
 ```json
 [
     {
-        "id": id,
-        "planet 1": planet_1,
-        "planet 2": planet_2,
-        "citizen id": citizen_id,
-        "min bid": min_bid
+        "id": "integer",
+        "planet 1": "string",
+        "planet 2": "string",
+        "citizen id": "integer",
+        "min bid": "integer"
     },
     ...
 ]
