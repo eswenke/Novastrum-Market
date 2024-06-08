@@ -7,6 +7,8 @@ from src import database as db
 from src.api.govt import War
 import src.api.citizen as citizen
 import random
+import time 
+
 
 router = APIRouter(
     prefix="/bids",
@@ -18,6 +20,8 @@ router = APIRouter(
 def make_bid(war_id: int, bid: int, planet: str):
     """make a bid on the war"""
     
+    begin = time.time() 
+
     if citizen.cit_id < 0:
         return "ERROR: Not logged in."
 
@@ -65,12 +69,16 @@ def make_bid(war_id: int, bid: int, planet: str):
             ), [{"citizen_id": citizen.cit_id, "war_id": war_id, "gold": gold, "planet": planet}]
         )
         
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms") 
+
     return "OK"
 
 
 @router.post("/end/{war_id}")
 def end_bidding(war_id: int):
     """ end the war and awards all winning bids """
+    begin = time.time() 
 
     if citizen.cit_id < 0:
         return "ERROR: Not logged in."
@@ -169,12 +177,17 @@ def end_bidding(war_id: int):
             [{"war_id": war_id}]
         )
 
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")
+
     return "War ended! Winner: " + winning_planet + "!"
 
 @router.post("/get_wars")
 def get_wars():
     """make a bid on the war"""
     
+    begin = time.time() 
+
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
 
@@ -202,5 +215,8 @@ def get_wars():
                 "citizen id": citizen_id,
                 "min bid": min_bid
             })
-        
+
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")
+  
     return wars

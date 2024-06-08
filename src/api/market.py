@@ -3,7 +3,7 @@ from src.api import auth
 import sqlalchemy
 from src import database as db
 import src.api.citizen as citizen
-
+import time
 
 router = APIRouter(
     prefix="/market_listings",
@@ -16,6 +16,7 @@ def get_market_listings():
     """
     returns all listings on the market. 
     """
+    begin = time.time() 
 
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
@@ -32,7 +33,6 @@ def get_market_listings():
             ).fetchall()
         
         for row in result:
-            print(row)
             id, name, type, price, quantity, seller_id, timestamp = row
             listings.append({
                 "name": name,
@@ -43,4 +43,7 @@ def get_market_listings():
                 "listing id": id
             })
         
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms") 
+
     return listings

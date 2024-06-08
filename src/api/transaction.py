@@ -5,6 +5,7 @@ from enum import Enum
 import sqlalchemy
 from src import database as db
 import src.api.citizen as citizen
+import time
 
 router = APIRouter(
     prefix="/transaction",
@@ -15,6 +16,8 @@ router = APIRouter(
 @router.post("/")
 def start_transaction():
     """init a transaction, insert to transaction table with civ id"""
+
+    begin = time.time()
 
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
@@ -31,12 +34,17 @@ def start_transaction():
             ],
         ).scalar_one()
 
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")  
+
     return {"transaction_id": id}
 
 
 @router.post("/items/{transaction_id}/{listing_id}")
 def add_items(transaction_id: int, listing_id: int):
     """insert item into transaction_items table with product_sku"""
+
+    begin = time.time()
 
     print(f"cart: {transaction_id} listing_id: {listing_id}")
 
@@ -67,6 +75,9 @@ def add_items(transaction_id: int, listing_id: int):
             [{"transaction_id": transaction_id, "listing_id": listing_id}],
         )
 
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")  
+
     return "OK"
 
 
@@ -77,109 +88,112 @@ def checkout(transaction_id: int):
     subtract product from seller inv, 
     add to buyer inv"""
 
+    begin = time.time()
+
     if citizen.cit_id < 0:
         return "ERROR: not logged in."
     
-    with db.engine.connect().execution_options(isolation_level="SERIALIZABLE") as connection:
-         with connection.begin():
-            p_res = connection.execute(
-                sqlalchemy.text(
-                    """
-                    WITH target AS (
-                        SELECT transaction_items.listing_id AS listing, transactions.buyer_id as buyer
-                        FROM transactions
-                        JOIN transaction_items ON transactions.transaction_id = transaction_items.transaction_id
-                        WHERE transaction_items.transaction_id = :transaction_id
-                    ),
-                    source AS (
-                        SELECT buyer, market.quantity as quantity, market.price as price, market.type as type, market.name as name, 'owned' as status
-                        FROM target
-                        JOIN market ON listing = market.id
-                        ORDER BY market.timestamp desc
-                        LIMIT 1
-                    )
-                    INSERT INTO inventory (citizen_id, quantity, type, name, status)
-                    SELECT source.buyer, source.quantity, source.type, source.name, source.status
-                    FROM source
-                    ON CONFLICT (citizen_id, type, name, status)
-                    DO UPDATE SET quantity = inventory.quantity + (SELECT source.quantity FROM source)
-                    WHERE inventory.citizen_id = (SELECT source.buyer FROM source)
-                    AND inventory.name = (SELECT source.name FROM source)
-                    AND inventory.type = (SELECT source.type FROM source)
-                    AND inventory.status = (SELECT source.status FROM source)
-                    RETURNING (SELECT source.price FROM source);
-                    """
+    with db.engine.begin() as connection:
+        p_res = connection.execute(
+            sqlalchemy.text(
+                """
+                WITH target AS (
+                    SELECT transaction_items.listing_id AS listing, transactions.buyer_id as buyer
+                    FROM transactions
+                    JOIN transaction_items ON transactions.transaction_id = transaction_items.transaction_id
+                    WHERE transaction_items.transaction_id = :transaction_id
                 ),
-                [{"transaction_id": transaction_id}]
-            ).scalar()
-            
+                source AS (
+                    SELECT buyer, market.quantity as quantity, market.price as price, market.type as type, market.name as name, 'owned' as status
+                    FROM target
+                    JOIN market ON listing = market.id
+                    ORDER BY market.timestamp desc
+                    LIMIT 1
+                )
+                INSERT INTO inventory (citizen_id, quantity, type, name, status)
+                SELECT source.buyer, source.quantity, source.type, source.name, source.status
+                FROM source
+                ON CONFLICT (citizen_id, type, name, status)
+                DO UPDATE SET quantity = inventory.quantity + (SELECT source.quantity FROM source)
+                WHERE inventory.citizen_id = (SELECT source.buyer FROM source)
+                AND inventory.name = (SELECT source.name FROM source)
+                AND inventory.type = (SELECT source.type FROM source)
+                AND inventory.status = (SELECT source.status FROM source)
+                RETURNING (SELECT source.price FROM source);
+                """
+            ),
+            [{"transaction_id": transaction_id}]
+        ).scalar()
 
-            if p_res is None:
-                return "ERROR: Checkout could not be completed, transaction already finished."
-            
-            price = p_res
+        if p_res is None:
+            return "ERROR: Checkout could not be completed, transaction already finished."
+        
+        price = p_res
 
-            connection.execute(
-                sqlalchemy.text(
-                    """
-                    UPDATE inventory
-                    SET quantity = quantity - :price
-                    WHERE citizen_id = (SELECT buyer_id FROM transactions WHERE transaction_id = :transaction_id)
-                    AND type = 'voidex'
-                    """
+        connection.execute(
+            sqlalchemy.text(
+                """
+                UPDATE inventory
+                SET quantity = quantity - :price
+                WHERE citizen_id = (SELECT buyer_id FROM transactions WHERE transaction_id = :transaction_id)
+                AND type = 'voidex'
+                """
+            ),
+            [{"price": price, "transaction_id": transaction_id}]
+        )
+
+        seller_id = connection.execute(
+            sqlalchemy.text(
+                """
+                WITH target AS (
+                    SELECT transaction_items.listing_id AS listing
+                    FROM transactions
+                    JOIN transaction_items ON transactions.transaction_id = transaction_items.transaction_id
+                    WHERE transaction_items.transaction_id = :transaction_id
                 ),
-                [{"price": price, "transaction_id": transaction_id}]
-            )
+                source AS (
+                    SELECT market.seller_id as seller, market.quantity as quantity, market.type as type, market.name as name, 'selling' as status
+                    FROM target
+                    JOIN market ON listing = market.id
+                    ORDER BY market.timestamp desc
+                    LIMIT 1
+                )
+                UPDATE inventory SET quantity = inventory.quantity - (SELECT source.quantity FROM source)
+                WHERE inventory.citizen_id = (SELECT source.seller FROM source)
+                AND inventory.name = (SELECT source.name FROM source)
+                AND inventory.type = (SELECT source.type FROM source)
+                AND inventory.status = (SELECT source.status FROM source)
+                RETURNING (SELECT source.seller FROM source);
+                """
+            ),
+            [{"transaction_id": transaction_id}]
+        ).scalar_one()
 
-            seller_id = connection.execute(
-                sqlalchemy.text(
-                    """
-                    WITH target AS (
-                        SELECT transaction_items.listing_id AS listing
-                        FROM transactions
-                        JOIN transaction_items ON transactions.transaction_id = transaction_items.transaction_id
-                        WHERE transaction_items.transaction_id = :transaction_id
-                    ),
-                    source AS (
-                        SELECT market.seller_id as seller, market.quantity as quantity, market.type as type, market.name as name, 'selling' as status
-                        FROM target
-                        JOIN market ON listing = market.id
-                        ORDER BY market.timestamp desc
-                        LIMIT 1
-                    )
-                    UPDATE inventory SET quantity = inventory.quantity - (SELECT source.quantity FROM source)
-                    WHERE inventory.citizen_id = (SELECT source.seller FROM source)
-                    AND inventory.name = (SELECT source.name FROM source)
-                    AND inventory.type = (SELECT source.type FROM source)
-                    AND inventory.status = (SELECT source.status FROM source)
-                    RETURNING (SELECT source.seller FROM source);
-                    """
-                ),
-                [{"transaction_id": transaction_id}]
-            ).scalar_one()
+        connection.execute(
+            sqlalchemy.text(
+                """
+                UPDATE inventory
+                SET quantity = quantity + :price
+                WHERE citizen_id = :seller_id
+                AND type = 'voidex'
+                RETURNING quantity
+                """
+            ),
+            [{"price": price, "seller_id": seller_id}]
+        )
 
-            connection.execute(
-                sqlalchemy.text(
-                    """
-                    UPDATE inventory
-                    SET quantity = quantity + :price
-                    WHERE citizen_id = :seller_id
-                    AND type = 'voidex'
-                    RETURNING quantity
-                    """
-                ),
-                [{"price": price, "seller_id": seller_id}]
-            )
-
-            quantity = connection.execute(
-                sqlalchemy.text(
-                    """
-                    DELETE FROM market
-                    WHERE id = (SELECT listing_id FROM transaction_items WHERE transaction_id = :transaction_id)
-                    RETURNING quantity
-                    """
-                ), 
-                [{"transaction_id": transaction_id}]
-            ).scalar_one()
+        quantity = connection.execute(
+            sqlalchemy.text(
+                """
+                DELETE FROM market
+                WHERE id = (SELECT listing_id FROM transaction_items WHERE transaction_id = :transaction_id)
+                RETURNING quantity
+                """
+            ), 
+            [{"transaction_id": transaction_id}]
+        ).scalar_one()
+    
+    end = time.time() 
+    print(f"Total runtime of the program is {1000 * (end - begin)} ms")  
 
     return {"quantity": quantity, "voidex_paid": price}
