@@ -5,7 +5,7 @@
 
 **Concurrency control mechanisms used in the Novastrum Market:**
 * Serializable isolation level set in checkout function to ensure the most strict level of isolation for a vital function- and to prevent dirty reads, non-repeatable reads, and phantom reads.
-* Pessimistic concurrency control: Using for update to lock rows in chemist and miner functions so other transactions can't use specific resources at the same time. 
+* Pessimistic concurrency control: Using `for update` to lock rows in chemist and miner functions so other transactions can't use specific resources at the same time. 
 
 **Cases where we may encounter a phenomenon:**
 * miner.py
