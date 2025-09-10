@@ -1,21 +1,80 @@
-## Novastrum-Market
-## Sri Bala (srbala@calpoly.edu), Bryce Kennedy(bkenne06@calpoly.edu), Ethan Swenke(eswenke@calpoly.edu), and Sofia Bryukhova (sbryukho@calpoly.edu)
-Our API idea is about an intergalactic black market. It will include bidding wars, gambling, space drugs, and space crime. There are extraterrestrial lifeforms scowering the black market in search of their next illegal space endeavor. There is an established universe with several planets that each contain mineable 'substances' and life forms. The beings have agreed to incorperate the currency of Voidex
+## Novastrum Market API
 
-## Planets
-Ecliptix, Lyxion IV, Pyre, Sylvaria, Zentharis, with a sun named Celestigon
+A scalable REST API for an intergalactic marketplace featuring role-based user systems, real-time bidding, and complex transaction management.
 
-## Lore
-Ecliptix is the main planet in the Novastrum Belt. The government operates from this planet, and because of this, activity in the Nova Market (this solar system's black market) is held mainly on the other 4 planets. These planets are rich in different mineable substances, and their economies are centered around mining and trading these substances. Behind the scenes, the Nova Market also operates as a way to stimulate their economies via illicit trading and bidding. 
+## Overview
 
-Ecliptix holds a centralized prison complex known as Edgevoid, and criminals from other planets are extradited here upon detainment, reducing activity on the planet from which they leave.
+Novastrum Market is a FastAPI-based backend service that simulates an intergalactic black market economy. The system supports multiple user roles (civilians, miners, chemists, government officials) with tier-based progression, marketplace transactions, substance trading, and war bidding mechanics.
 
-Lyxion IV is a planet that has been war-torn throughout the ages. The government designated this planet as the centralized war hub in order to minimize destruction of the solar system, and all warring groups agreed upon this in a treaty call the Nova War Pact. Over the years, the planet has had to be restructured and rebuilt due to the unihabitable nature of the aftermath following each war. Due to living costs being a fraction of the cost of other planets, Lyxion IV remains populated by residents of the Novastrum Belt.
+## Tech Stack
 
-## Concepts
-Example Lifeforms:
-![image](https://github.com/eswenke/csc-365-API/assets/97144495/c811b59d-75c0-4707-96d0-e8d9dfce2cbe)
+- **Backend**: FastAPI, Python 3.9+
+- **Database**: PostgreSQL with SQLAlchemy ORM
+- **Server**: Uvicorn ASGI
+- **Authentication**: Custom API key middleware
+- **Database Tools**: Supabase (optional), psycopg2-binary
 
-Currency - Voidex: 
-![image](https://github.com/eswenke/csc-365-API/assets/97144495/dfd48a5a-ceb4-46ce-b488-79f89a16f39a)
+## Key Features
 
+- **Role-Based Access Control**: 4-tier user progression system with dedicated modules (`citizen.py`, `miner.py`, `chemist.py`, `govt.py`)
+- **Marketplace System**: Buy/sell substances and narcotics via `market.py`
+- **Real-Time Bidding**: War betting with dynamic pricing through `bids.py`
+- **Transaction Management**: Complete purchase workflows in `transaction.py`
+- **Inventory System**: User-specific item management via `inventory.py`
+- **Database Relationships**: 9 normalized tables with foreign key constraints
+
+## Database Schema
+
+The system uses a normalized PostgreSQL database with the following core entities:
+- `citizens` - User accounts with role-based permissions
+- `inventory` - User-owned items and currency (Voidex)
+- `market` - Active marketplace listings
+- `transactions` - Purchase history and cart management
+- `wars` - Biddable conflicts between planets
+- `bids` - User war betting records
+- `substances` & `narcos` - Tradeable items with rarity systems
+
+
+### Example Endpoints
+
+- `POST /citizen/create` - User registration
+- `POST /citizen/login` - Authentication
+- `GET /inventory/audit` - View user inventory
+- `GET /market/` - Browse marketplace
+- `POST /transaction/` - Start purchase
+- `GET /bids/wars` - View active wars
+- `POST /bids/place` - Place war bets
+
+## Architecture
+
+The application follows a modular architecture with separate routers for each domain:
+
+```
+src/
+├── api/
+│   ├── citizen.py      # User management
+│   ├── inventory.py    # Item management
+│   ├── market.py       # Marketplace operations
+│   ├── transaction.py  # Purchase workflows
+│   ├── bids.py         # War betting system
+│   ├── miner.py        # Mining operations
+│   ├── chemist.py      # Narcotic brewing
+│   ├── govt.py         # Government operations
+│   ├── narco.py        # Narcotic management
+│   ├── auth.py         # Authentication middleware
+│   ├── populate.py     # Database seeding
+│   └── server.py       # FastAPI app configuration
+├── database.py         # Database connection
+└── __init__.py
+```
+
+## Contributors
+
+- **Sri Bala** - srbala@calpoly.edu
+- **Bryce Kennedy** - bkenne06@calpoly.edu  
+- **Ethan Swenke** - eswenke@calpoly.edu
+- **Sofia Bryukhova** - sbryukho@calpoly.edu
+
+## 📄 License
+
+This project was developed as part of a database systems course at Cal Poly San Luis Obispo.
